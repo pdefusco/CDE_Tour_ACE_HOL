@@ -49,6 +49,8 @@ import sys
 
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/parquet_data"
+
+# Your Username Here:
 username = "paul"
 
 spark = SparkSession \
@@ -77,8 +79,16 @@ spark = SparkSession \
 try:
     spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
     spark.sql("CALL spark_catalog.system.migrate('{}_CAR_DATA.CAR_SALES')".format(username))
+    print("Migrated the Car Sales Table to Iceberg Format.")
 except:
-    print("The table has already been migrated to Iceberg.")
+    print("The Car Sales table has already been migrated to Iceberg Format.")
+
+try:
+    spark.sql("ALTER TABLE {}_CAR_DATA.CUSTOMER_DATA UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
+    spark.sql("CALL spark_catalog.system.migrate('{}_CAR_DATA.CUSTOMER_DATA')".format(username))
+    print("Migrated the Customer Data table to Iceberg Format.")
+except:
+    print("The Customer Data table has already been migrated to Iceberg.")
 
 # Iceberg comes with catalogs that enable SQL commands to manage tables and load them by name.
 # Catalogs are configured using properties under spark.sql.catalog.(catalog_name).
