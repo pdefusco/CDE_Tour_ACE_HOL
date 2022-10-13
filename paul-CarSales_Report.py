@@ -44,9 +44,10 @@
 #---------------------------------------------------
 
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
+from pyspark.sql.types import *
 from quinn.extensions import *
 import quinn
-import pyspark.sql.functions as F
 import sys
 
 data_lake_name = "s3a://go01-demo/"
@@ -61,7 +62,7 @@ spark = SparkSession \
     .config("spark.sql.catalog.spark_catalog", "org.apache.iceberg.spark.SparkSessionCatalog")\
     .config("spark.sql.catalog.spark_catalog.type", "hive")\
     .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")\
-    .config("spark.sql.adaptive.enabled", false)\
+    .config("spark.sql.adaptive.enabled", "false")\
     .config("spark.yarn.access.hadoopFileSystems", data_lake_name)\
     .getOrCreate()
 
@@ -77,7 +78,7 @@ customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_D
 #---------------------------------------------------
 
 def test_column_presence(spark_df, col_list):
-    print("Testing for existence of: {}", [i for i in col_list])
+    print("Testing for existence of Columns: ", [i for i in col_list])
 
     try:
         print(quinn.validate_presence_of_columns(spark_df, col_list))
@@ -92,9 +93,10 @@ def test_null_presence_in_col(spark_df, col):
     try:
         df = spark_df.withColumn("is_blank_or_null", F.col(col).isNullOrBlank())
         print("Dataframe enriched with test")
-        return df
     except:
         print("Error During Test")
+
+    return df
 
 def test_values_not_in_col(spark_df, value_list, col):
     print("Testing for exclusion of values: ")
@@ -102,11 +104,12 @@ def test_values_not_in_col(spark_df, value_list, col):
     print("from Column: {}".format(col))
 
     try:
-        df = spark_df.withColumn("{}_is_not_in_val_list".format(col), F.col(col).isNotIn(value_list))
+        df = spark_df.withColumn("is_not_in_val_list", F.col(col).isNotIn(value_list))
         print("Dataframe enriched with test")
-        return df
     except:
         print("Error During Test")
+
+    return df
 
 #---------------------------------------------------
 #               RUNNING DATA QUALITY TESTS
@@ -117,16 +120,16 @@ test_column_presence(car_sales_df, ["customer_id"])
 test_column_presence(customer_data_df, ["customer_id"])
 
 # Test 2: Spot Nulls or Blanks in Customer Data Sale Price Column:
-car_sales_df = test_null_presence_in_col(car_sales_df, "salesprice")
+car_sales_df = test_null_presence_in_col(car_sales_df, "saleprice")
 
 # Test 3:
-customer_data_df = test_values_not_in_col(customer_data_df, ["23356", "99803", "31750"], zip)
+customer_data_df = test_values_not_in_col(customer_data_df, ["23356", "99803", "31750"], "zip")
 
 #---------------------------------------------------
 #               JOIN CUSTOMER AND SALES DATA
 #---------------------------------------------------
 
-report_df = car_sales_df.join(car_sales_df, "customer_id")
+report_df = car_sales_df.join(customer_data_df, "customer_id")
 
 #---------------------------------------------------
 #               A FEW MORE ETL STEPS
@@ -138,19 +141,19 @@ key_attributes_df.show()
 
 spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
 
-df1 = key_attributes_df.withColumn("Date",to_date(col("sale_date"),"MM/dd/yyyy"))
+df1 = key_attributes_df.withColumn("Date",F.to_date(F.col("sale_date"),"MM/dd/yyyy"))
 df1.show()
 
-df2 = df1.withColumn("Month", month("Date"))
+df2 = df1.withColumn("Month", F.month("Date"))
 df2.show()
 
-df3 = df2.withColumn("Price", col("saleprice").cast("float"))
+df3 = df2.withColumn("Price", F.col("saleprice").cast("float"))
 df3.show()
 
 df4 = df3.select(["model", "gender", "Month", "Price"])
 df4.show()
 
-df5 = df4.withColumn("model", regexp_replace("model", "Model", ""))
+df5 = df4.withColumn("model", F.regexp_replace("model", "Model", ""))
 df5.show()
 
 #---------------------------------------------------
@@ -158,16 +161,16 @@ df5.show()
 #---------------------------------------------------
 
 #Group By Total Sales by Month
-month_sales_df = df5.groupBy("Month").sum("Price").na.drop().sort(asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_month")
+month_sales_df = df5.groupBy("Month").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_month")
 month_sales_df = month_sales_df.withColumn('total_sales_by_month', month_sales_df.sales_by_month.cast(DecimalType(18, 2)))
-month_sales_df.select(["Month", "total_sales_by_month"]).sort(asc('Month')).show()
+month_sales_df.select(["Month", "total_sales_by_month"]).sort(F.asc('Month')).show()
 
 #Group By Total Sales by Month
-model_sales_df = df5.groupBy("model").sum("Price").na.drop().sort(asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_model")
+model_sales_df = df5.groupBy("model").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_model")
 model_sales_df = model_sales_df.withColumn('total_sales_by_model', model_sales_df.sales_by_model.cast(DecimalType(18, 2)))
-model_sales_df.select(["model", "total_sales_by_model"]).sort(asc('model')).show()
+model_sales_df.select(["model", "total_sales_by_model"]).sort(F.asc('model')).show()
 
 #Group By Total Sales by Gender
-gender_sales_df = df5.groupBy("gender").sum("Price").na.drop().sort(asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_gender")
+gender_sales_df = df5.groupBy("gender").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_gender")
 gender_sales_df = gender_sales_df.withColumn('total_sales_by_gender', gender_sales_df.sales_by_gender.cast(DecimalType(18, 2)))
-gender_sales_df.select(["gender", "total_sales_by_gender"]).sort(asc('gender')).show()
+gender_sales_df.select(["gender", "total_sales_by_gender"]).sort(F.asc('gender')).show()
