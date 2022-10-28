@@ -52,7 +52,7 @@ import sys
 import utils
 
 data_lake_name = "s3a://go01-demo/"
-s3BucketName = "s3a://go01-demo/cde-workshop/car-data/"
+s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
 username = "user_test_1"
 
@@ -78,15 +78,14 @@ customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_D
 #---------------------------------------------------
 
 batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, inferSchema=True)
-batch_df.write.mode("overwrite").registerTempTable('{}_CAR_DATA.CAR_SALES_TEMP'.format(username), format="parquet")
-
+batch_df.registerTempTable('{}_CAR_SALES_TEMP'.format(username))
 
 #---------------------------------------------------
 #               ICEBERG MERGE INTO
 #---------------------------------------------------
 
 ICEBERG_MERGE_INTO = '''MERGE INTO spark_catalog.{}_CAR_DATA.CAR_SALES t
-                            USING (SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP) s
+                            USING (SELECT * FROM {}_CAR_SALES_TEMP) s
                             ON t.CUSTOMER_ID = s.CUSTOMER_ID
                             WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 THEN DELETE
                             WHEN NOT MATCHED THEN INSERT *'''.format(username)
