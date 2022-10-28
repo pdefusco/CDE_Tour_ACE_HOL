@@ -54,7 +54,7 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "user_test_1"
+username = "user_test_2"
 
 spark = SparkSession \
     .builder \
@@ -78,17 +78,52 @@ customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_D
 #---------------------------------------------------
 
 batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, inferSchema=True)
-batch_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
+
+#---------------------------------------------------
+#                SIMPLE ETL
+#---------------------------------------------------
+
+# Adding month column to Sales Historical
+spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
+
+car_sales_df = car_sales_df.withColumn("date",F.to_date(F.col("sale_date"),"MM/dd/yyyy"))
+car_sales_df = car_sales_df.withColumn("month", F.month("date"))
+
+#car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+car_sales_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES_ETL'.format(username), format="parquet")
+
+car_sales_etl_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_ETL".format(username))
+car_sales_etl_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+
+# Adding month column to Sales Latest Batch
+batch_df = batch_df.withColumn("date",F.to_date(F.col("sale_date"),"MM/dd/yyyy"))
+batch_df = batch_df.withColumn("month", F.month("date"))
+
+#car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+batch_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.BATCH_ETL'.format(username), format="parquet")
+
+batch_etl_df = spark.sql("SELECT * FROM {}_CAR_DATA.BATCH_ETL".format(username))
+#batch_etl_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+
+# Creating Temp View for MERGE INTO command
+batch_etl_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
+
+#spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP")
 
 #---------------------------------------------------
 #               ICEBERG MERGE INTO
 #---------------------------------------------------
 
-ICEBERG_MERGE_INTO = '''MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t
-                            USING (SELECT * FROM {0}_CAR_SALES_TEMP) s
-                            ON t.CUSTOMER_ID = s.CUSTOMER_ID
-                            WHEN MATCHED AND s.MODEL = "Model C" AND s.SALEPRICE > 100000 THEN DELETE
-                            WHEN NOT MATCHED THEN INSERT *'''.format(username)
+print(car_sales_df.dtypes)
+print('\n')
+print(batch_df.dtypes)
+
+
+ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t\
+                            USING (SELECT * FROM {0}_CAR_SALES_TEMP) s\
+                            ON t.CUSTOMER_ID = s.CUSTOMER_ID\
+                            WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 AND s.DATE > '5/10/2020' THEN DELETE\
+                            WHEN NOT MATCHED THEN INSERT *".format(username)
 
 customer_data_df = spark.sql(ICEBERG_MERGE_INTO)
 
