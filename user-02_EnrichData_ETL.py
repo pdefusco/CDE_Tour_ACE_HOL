@@ -93,7 +93,7 @@ car_sales = car_sales.withColumn("month", F.month("date"))
 #car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
 car_sales.registerTempTable('{}_CAR_SALES_TEMP_ETL'.format(username))
 
-temp_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP_ETL".format(username))
+temp_df = spark.sql("SELECT * FROM {}_CAR_SALES_TEMP_ETL".format(username))
 temp_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
 
 #spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP")
