@@ -14,7 +14,7 @@ default_args = {
     'end_date': datetime(2023,9,30)
 }
 
-dag = DAG(
+basic_dag = DAG(
     'user-05-airflow-pipeline',
     default_args=default_args,
     schedule_interval='@yearly',
@@ -22,17 +22,17 @@ dag = DAG(
     is_paused_upon_creation=False
 )
 
-#Using the CDEJobRunOperator
-merge_into_step1 = CDEJobRunOperator(
-    task_id='iceberg-merge-into',
-    dag=dag,
-    job_name='05_a_iceberg_mergeinto' #job_name needs to match the name assigned to the Spark CDE Job in the CDE UI
-)
-
-incremental_report_step2 = DummyOperator(
-    task_id='dummy_task',
-    dag=dag,
+merge_into_step1 = DummyOperator(
+    task_id='iceberg-merge-into-placeholder',
+    dag=basic_dag,
   )
+
+#Using the CDEJobRunOperator
+incremental_step2 = CDEJobRunOperator(
+  task_id='iceberg-merge-into',
+  dag=basic_dag,
+  job_name='05_b_reports' #job_name needs to match the name assigned to the Spark CDE Job in the CDE UI
+)
 
 #incremental_report_step2 = CDEJobRunOperator(
 #    task_id='iceberg-incremental-report',
@@ -40,8 +40,5 @@ incremental_report_step2 = DummyOperator(
 #    job_name='05_b_reports' #job_name needs to match the name assigned to the Spark CDE Job in the CDE UI
 #)
 
-
-
-
 #Execute tasks in the below order
-merge_into_step1 >> incremental_report_step2
+merge_into_step1 >> incremental_step2

@@ -17,7 +17,7 @@ default_args = {
         }
 
 operators_dag = DAG(
-        'operators_dag',
+        '06-airflow-operators-dag',
         default_args=default_args,
         schedule_interval='@daily',
         catchup=False,
@@ -37,7 +37,7 @@ shell_step2 = BashOperator(
         )
 
 shell_jinja_step3 = BashOperator(
-    task_id='also_run_this',
+    task_id='bash_with_jinja',
     dag=operators_dag,
     bash_command='echo "yesterday={{ yesterday_ds }} | today={{ ds }}| tomorrow={{ tomorrow_ds }}"',
 )
@@ -65,7 +65,8 @@ http_task_step5 = SimpleHttpOperator(
     task_id="random_joke_api",
     method="GET",
     http_conn_id="random_joke_connection",
-    endpoint="https://official-joke-api.appspot.com/jokes/programming/random",
+    endpoint="/jokes/programming/random",
+    headers={"Content-Type":"application/json"},
     response_check=lambda response: handle_response(response),
     dag=operators_dag,
     do_xcom_push=True
@@ -75,7 +76,7 @@ def _print_random_joke(**context):
     return context['ti'].xcom_pull(task_ids='random_joke_api')
 
 random_joke_step6 = PythonOperator(
-    task_id="print_quote",
+    task_id="print_random_joke",
     python_callable=_print_random_joke,
     dag=operators_dag
 )
