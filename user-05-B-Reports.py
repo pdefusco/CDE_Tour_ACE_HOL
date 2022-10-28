@@ -46,8 +46,6 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql.types import *
-from quinn.extensions import *
-import quinn
 import sys
 import utils
 

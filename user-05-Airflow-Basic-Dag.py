@@ -29,7 +29,7 @@ merge_into_step1 = DummyOperator(
 
 #Using the CDEJobRunOperator
 incremental_step2 = CDEJobRunOperator(
-  task_id='iceberg-merge-into',
+  task_id='iceberg-reports',
   dag=basic_dag,
   job_name='05_b_reports' #job_name needs to match the name assigned to the Spark CDE Job in the CDE UI
 )
