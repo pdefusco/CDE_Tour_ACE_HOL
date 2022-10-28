@@ -41,7 +41,7 @@ spark_sql__right_step2 = CDEJobRunOperator(
 spark_sql_join_step3 = CDEJobRunOperator(
         task_id='join-tables',
         dag=logic_dag,
-        job_name='07-C-Join'
+        job_name='07_C_Join'
         )
 
 # The spark_sql_join_step3 task only executes when both spark_sql_left_step1 and spark_sql__right_step2 have completed

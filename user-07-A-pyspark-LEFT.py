@@ -28,7 +28,7 @@ left_df.printSchema()
 
 sleep(20)
 
-for each in df.collect():
+for each in left_df.collect():
     print(each[0])
 
 try:

@@ -16,4 +16,7 @@ spark = SparkSession \
 
 spark.sql("SELECT * FROM {0}_CAR_DATA.LEFT_TABLE L\
             INNER JOIN {0}_CAR_DATA.RIGHT_TABLE R\
-            ON L.PERSON_NAME = R.PERSON_NAME ".format(username)).show()
+            ON L.PERSON_NAME = R.NAME ".format(username)).show()
+
+spark.sql("DROP TABLE IF EXISTS {}_CAR_DATA.RIGHT_TABLE".format(username))
+spark.sql("DROP TABLE IF EXISTS {}_CAR_DATA.LEFT_TABLE".format(username))
