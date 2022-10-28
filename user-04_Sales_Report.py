@@ -78,16 +78,16 @@ customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_D
 #---------------------------------------------------
 
 batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, inferSchema=True)
-batch_df.registerTempTable('{}_CAR_SALES_TEMP'.format(username))
+batch_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
 
 #---------------------------------------------------
 #               ICEBERG MERGE INTO
 #---------------------------------------------------
 
-ICEBERG_MERGE_INTO = '''MERGE INTO spark_catalog.{}_CAR_DATA.CAR_SALES t
-                            USING (SELECT * FROM {}_CAR_SALES_TEMP) s
+ICEBERG_MERGE_INTO = '''MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t
+                            USING (SELECT * FROM {0}_CAR_SALES_TEMP) s
                             ON t.CUSTOMER_ID = s.CUSTOMER_ID
-                            WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 THEN DELETE
+                            WHEN MATCHED AND s.MODEL = "Model C" AND s.SALEPRICE > 100000 THEN DELETE
                             WHEN NOT MATCHED THEN INSERT *'''.format(username)
 
 customer_data_df = spark.sql(ICEBERG_MERGE_INTO)
