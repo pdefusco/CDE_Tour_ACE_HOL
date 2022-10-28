@@ -124,6 +124,8 @@ except:
 
 spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.history".format(username)).show(20, False)
 
+spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots".format(username)).show(20, False)
+
 # SAVE TIMESTAMP BEFORE INSERTS
 now = datetime.now()
 

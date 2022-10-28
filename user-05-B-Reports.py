@@ -64,18 +64,25 @@ spark = SparkSession \
     .config("spark.yarn.access.hadoopFileSystems", data_lake_name)\
     .getOrCreate()
 
+#spark.sql("USE spark_catalog.{}_CAR_DATA".format(username))
+#spark.sql("SHOW CURRENT NAMESPACE").show()
+
 #---------------------------------------------------
 #               ICEBERG TABLE HISTORY AND SNAPSHOTS
 #---------------------------------------------------
 
+#spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.history".format(username)).show(20, False)
+
+spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots".format(username)).show(20, False)
+
 # ICEBERG TABLE HISTORY (SHOWS EACH SNAPSHOT AND TIMESTAMP)
-spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.history;".format(username)).show()
+#spark.sql("SELECT * FROM CAR_SALES.history;".format(username)).show()
 
 # ICEBERG TABLE SNAPSHOTS (USEFUL FOR INCREMENTAL QUERIES AND TIME TRAVEL)
-spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username)).show()
+#spark.sql("SELECT * FROM CAR_SALES.snapshots;".format(username)).show()
 
 # GRAB FIRST AND LAST SNAPSHOT ID'S FROM SNAPSHOTS TABLE
-snapshots_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username))
+snapshots_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots;".format(username))
 
 last_snapshot = snapshots_df.select("snapshot_id").tail(1)[0][0]
 first_snapshot = snapshots_df.select("snapshot_id").head(1)[0][0]
