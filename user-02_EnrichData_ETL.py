@@ -74,7 +74,7 @@ _DEBUG_ = False
 #                READ SOURCE TABLES
 #---------------------------------------------------
 print("JOB STARTED...")
-car_sales     = spark.sql("SELECT * FROM {}_CAR_DATA.car_sales".format(username))
+car_sales     = spark.sql("SELECT * FROM {}_CAR_DATA.car_sales".format(username)) #could also checkpoint here but need to set checkpoint dir
 customer_data = spark.sql("SELECT * FROM {}_CAR_DATA.customer_data".format(username))
 car_installs  = spark.sql("SELECT * FROM {}_CAR_DATA.car_installs".format(username))
 factory_data  = spark.sql("SELECT * FROM {}_CAR_DATA.experimental_motors".format(username))
@@ -89,7 +89,14 @@ spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
 
 car_sales = car_sales.withColumn("date",F.to_date(F.col("sale_date"),"MM/dd/yyyy"))
 car_sales = car_sales.withColumn("month", F.month("date"))
-car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+
+#car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+car_sales.write.mode("overwrite").registerTempTable('{}_CAR_DATA.CAR_SALES_TEMP_ETL'.format(username), format="parquet")
+
+temp_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP_ETL".format(username))
+temp_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+
+#spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP")
 
 #---------------------------------------------------
 #                  APPLY FILTERS

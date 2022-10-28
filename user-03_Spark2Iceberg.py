@@ -73,6 +73,8 @@ spark = SparkSession \
 #print(query_2)
 #spark.sql(query_2)
 
+spark.sql("SELECT * FROM {}_CAR_DATA.car_sales".format(username))
+
 #----------------------------------------------------
 #               MIGRATE SPARK TABLES TO ICEBERG TABLE
 #----------------------------------------------------
