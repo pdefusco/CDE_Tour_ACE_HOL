@@ -10,10 +10,10 @@ import pendulum
 #from airflow.models import Variable
 
 default_args = {
-        'owner': 'user',
+        'owner': 'pauldefusco',
         'retry_delay': timedelta(seconds=5),
         'depends_on_past': False,
-        'start_date': pendulum.datetime(2022, 10, 10, tz="America/Seattle")
+        'start_date': pendulum.datetime(2020, 1, 1, tz="Europe/Amsterdam")
         }
 
 operators_dag = DAG(
