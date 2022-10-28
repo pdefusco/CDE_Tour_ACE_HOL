@@ -1,0 +1,27 @@
+# Commands to Run in your local machine
+
+#where <jobs_api_url> is a link found in Cluster Details
+export CDE_JOB_URL="<jobs_api_url>"
+
+#setting environemtn variable
+export CDE_TOKEN=$(curl -u <workload_user> $(echo '<grafana_charts>' | cut -d'/' -f1-3 | awk '{print $1"/gateway/authtkn/knoxtoken/api/v1/token"}') | jq -r '.access_token')
+
+#<workload_user> is CDP workload user
+#<grafana_charts> is a link found in Cluster Details
+
+#Let’s create a resource, hol_resource, which will hold a Python program Create_Reports.py.
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X POST "${CDE_JOB_URL}/resources" -H "Content-Type: application/json" -d "{ \"name\": \"hol_resource\"}"
+
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X PUT "${CDE_JOB_URL}/resources/hol_resource/user-06-pyspark-sql.py" -F 'file=@/local/path/user-06-pyspark-sql.py'
+
+#Let's verify
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/resources/hol_resource" | jq .
+
+#Let’s schedule a job, PySparkSQL, to run every thirty minutes past the hour:
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X POST "${CDE_JOB_URL}/jobs" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"name\": \"pysparksql\", \"type\": \"spark\", \"retentionPolicy\": \"keep_indefinitely\", \"mounts\": [ { \"dirPrefix\": \"/\", \"resourceName\": \"hol_resource\" } ], \"spark\": { \"file\": \"user-06-pyspark-sql.py\", \"conf\": { \"spark.pyspark.python\": \"python3\" } }, \"schedule\": { \"enabled\": true, \"user\": \"username\", \"cronExpression\": \"30 */1 * * *\", \"start\": \"2022-10-18\", \"end\": \"2023-08-18\" } }"
+
+#Let’s take a look at the most recent job execution:
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/jobs?latestjob=true&filter=name%5Beq%5Dpysparksql&limit=20&offset=0&orderby=name&orderasc=true" | jq .
+
+#Let's review the output for all job runs
+curl -H "Authorization: Bearer ${CDE_TOKEN}" -X GET "${CDE_JOB_URL}/job-runs"
