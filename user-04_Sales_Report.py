@@ -155,14 +155,14 @@ spark.read()\
 #---------------------------------------------------
 
 # Test 1: Ensure Customer ID is Present so Join Can Happen
-test_column_presence(car_sales_df, ["customer_id"])
-test_column_presence(customer_data_df, ["customer_id"])
+utils.test_column_presence(car_sales_df, ["customer_id"])
+utils.test_column_presence(customer_data_df, ["customer_id"])
 
 # Test 2: Spot Nulls or Blanks in Customer Data Sale Price Column:
-car_sales_df = test_null_presence_in_col(car_sales_df, "saleprice")
+car_sales_df = utils.test_null_presence_in_col(car_sales_df, "saleprice")
 
 # Test 3:
-customer_data_df = test_values_not_in_col(customer_data_df, ["23356", "99803", "31750"], "zip")
+customer_data_df = utils.test_values_not_in_col(customer_data_df, ["23356", "99803", "31750"], "zip")
 
 #---------------------------------------------------
 #               JOIN CUSTOMER AND SALES DATA
