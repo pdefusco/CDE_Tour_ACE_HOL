@@ -91,10 +91,10 @@ car_sales = car_sales.withColumn("date",F.to_date(F.col("sale_date"),"MM/dd/yyyy
 car_sales = car_sales.withColumn("month", F.month("date"))
 
 #car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
-car_sales.registerTempTable('{}_CAR_SALES_TEMP_ETL'.format(username))
+car_sales.saveAsTable('{}_CAR_DATA.CAR_SALES_ETL'.format(username))
 
-temp_df = spark.sql("SELECT * FROM {}_CAR_SALES_TEMP_ETL".format(username))
-temp_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+etl_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_ETL".format(username))
+etl_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
 
 #spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP")
 
