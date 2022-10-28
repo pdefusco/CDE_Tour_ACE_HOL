@@ -51,7 +51,7 @@ data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/car-data/"
 
 # Your Username Here:
-username = "user_test_2"
+username = "user_test_3"
 
 spark = SparkSession \
     .builder \

@@ -46,6 +46,8 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql.types import *
+from quinn.extensions import *
+import quinn
 import sys
 import utils
 
@@ -75,7 +77,7 @@ customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_D
 #               LOAD NEW BATCH DATA
 #---------------------------------------------------
 
-batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, inferSchema=True)
+batch_df = spark.read.csv(s3BucketName + "12312020_car_sales.csv", header=True, inferSchema=True)
 
 #---------------------------------------------------
 #                SIMPLE ETL
@@ -124,88 +126,3 @@ ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t\
                             WHEN NOT MATCHED THEN INSERT *".format(username)
 
 customer_data_df = spark.sql(ICEBERG_MERGE_INTO)
-
-#---------------------------------------------------
-#               ICEBERG TABLE HISTORY AND SNAPSHOTS
-#---------------------------------------------------
-
-# ICEBERG TABLE HISTORY (SHOWS EACH SNAPSHOT AND TIMESTAMP)
-spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.history;".format(username)).show()
-
-# ICEBERG TABLE SNAPSHOTS (USEFUL FOR INCREMENTAL QUERIES AND TIME TRAVEL)
-spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username)).show()
-
-# GRAB FIRST AND LAST SNAPSHOT ID'S FROM SNAPSHOTS TABLE
-snapshots_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username))
-
-last_snapshot = snapshots_df.select("snapshot_id").tail(1)[0][0]
-first_snapshot = snapshots_df.select("snapshot_id").head(1)[0][0]
-
-# ICEBERG INCREMENTAL READ
-spark.read()\
-    .format("iceberg")\
-    .option("start-snapshot-id", first_snapshot)\
-    .option("end-snapshot-id", last_snapshot)\
-    .load("spark_catalog.{}_CAR_DATA.CAR_SALES").show()
-
-#---------------------------------------------------
-#               RUNNING DATA QUALITY TESTS
-#---------------------------------------------------
-
-# Test 1: Ensure Customer ID is Present so Join Can Happen
-utils.test_column_presence(car_sales_df, ["customer_id"])
-utils.test_column_presence(customer_data_df, ["customer_id"])
-
-# Test 2: Spot Nulls or Blanks in Customer Data Sale Price Column:
-car_sales_df = utils.test_null_presence_in_col(car_sales_df, "saleprice")
-
-# Test 3:
-customer_data_df = utils.test_values_not_in_col(customer_data_df, ["23356", "99803", "31750"], "zip")
-
-#---------------------------------------------------
-#               JOIN CUSTOMER AND SALES DATA
-#---------------------------------------------------
-
-report_df = car_sales_df.join(customer_data_df, "customer_id")
-report_df.write.mode("overwrite").registerTempTable('{}_CAR_DATA.REPORT_FACT_TABLE'.format(username), format="parquet")
-
-#---------------------------------------------------
-#               ICEBERG SCHEMA EVOLUTION
-#---------------------------------------------------
-
-# DROP COLUMNS
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN CUSTOMER_ID".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN VIN".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN USERNAME".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN SALE_DATE".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN NAME".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN EMAIL".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN OCCUPATION".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN BIRTHDATE".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN ADDRESS".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN SALARY".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN ZIP".format(username))
-
-# CAST COLUMN TO FLOAT
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE COLUMN SALEPRICE FLOAT".format(username))
-
-#---------------------------------------------------
-#               ANALYTICAL QUERIES
-#---------------------------------------------------
-
-fact_df = spark.sql("SELECT * FROM {}_CAR_DATA.REPORT_FACT_TABLE".format(username))
-
-#GROUP TOTAL SALES BY MONTH
-month_sales_df = fact_df.groupBy("Month").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_month")
-month_sales_df = month_sales_df.withColumn('total_sales_by_month', month_sales_df.sales_by_month.cast(DecimalType(18, 2)))
-month_sales_df.select(["Month", "total_sales_by_month"]).sort(F.asc('Month')).show()
-
-#GROUP TOTAL SALES BY MODEL
-model_sales_df = fact_df.groupBy("model").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_model")
-model_sales_df = model_sales_df.withColumn('total_sales_by_model', model_sales_df.sales_by_model.cast(DecimalType(18, 2)))
-model_sales_df.select(["model", "total_sales_by_model"]).sort(F.asc('model')).show()
-
-#GROUP TOTAL SALES BY GENDER
-gender_sales_df = fact_df.groupBy("gender").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_gender")
-gender_sales_df = gender_sales_df.withColumn('total_sales_by_gender', gender_sales_df.sales_by_gender.cast(DecimalType(18, 2)))
-gender_sales_df.select(["gender", "total_sales_by_gender"]).sort(F.asc('gender')).show()

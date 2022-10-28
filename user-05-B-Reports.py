@@ -46,6 +46,8 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql.types import *
+from quinn.extensions import *
+import quinn
 import sys
 import utils
 
@@ -63,67 +65,6 @@ spark = SparkSession \
     .config("spark.sql.adaptive.enabled", "false")\
     .config("spark.yarn.access.hadoopFileSystems", data_lake_name)\
     .getOrCreate()
-
-#---------------------------------------------------
-#               LOAD ICEBERG TABLES AS DATAFRAMES
-#---------------------------------------------------
-
-car_sales_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
-customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_DATA".format(username))
-
-#---------------------------------------------------
-#               LOAD NEW BATCH DATA
-#---------------------------------------------------
-
-batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, inferSchema=True)
-
-#---------------------------------------------------
-#                SIMPLE ETL
-#---------------------------------------------------
-
-# Adding month column to Sales Historical
-spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
-
-car_sales_df = car_sales_df.withColumn("date",F.to_date(F.col("sale_date"),"MM/dd/yyyy"))
-car_sales_df = car_sales_df.withColumn("month", F.month("date"))
-
-#car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
-car_sales_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES_ETL'.format(username), format="parquet")
-
-car_sales_etl_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_ETL".format(username))
-car_sales_etl_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
-
-# Adding month column to Sales Latest Batch
-batch_df = batch_df.withColumn("date",F.to_date(F.col("sale_date"),"MM/dd/yyyy"))
-batch_df = batch_df.withColumn("month", F.month("date"))
-
-#car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
-batch_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.BATCH_ETL'.format(username), format="parquet")
-
-batch_etl_df = spark.sql("SELECT * FROM {}_CAR_DATA.BATCH_ETL".format(username))
-#batch_etl_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
-
-# Creating Temp View for MERGE INTO command
-batch_etl_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
-
-#spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP")
-
-#---------------------------------------------------
-#               ICEBERG MERGE INTO
-#---------------------------------------------------
-
-print(car_sales_df.dtypes)
-print('\n')
-print(batch_df.dtypes)
-
-
-ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t\
-                            USING (SELECT * FROM {0}_CAR_SALES_TEMP) s\
-                            ON t.CUSTOMER_ID = s.CUSTOMER_ID\
-                            WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 AND s.DATE > '5/10/2020' THEN DELETE\
-                            WHEN NOT MATCHED THEN INSERT *".format(username)
-
-customer_data_df = spark.sql(ICEBERG_MERGE_INTO)
 
 #---------------------------------------------------
 #               ICEBERG TABLE HISTORY AND SNAPSHOTS
@@ -147,6 +88,13 @@ spark.read()\
     .option("start-snapshot-id", first_snapshot)\
     .option("end-snapshot-id", last_snapshot)\
     .load("spark_catalog.{}_CAR_DATA.CAR_SALES").show()
+
+#---------------------------------------------------
+#               LOAD ICEBERG TABLES AS DATAFRAMES
+#---------------------------------------------------
+
+car_sales_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
+customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_DATA".format(username))
 
 #---------------------------------------------------
 #               RUNNING DATA QUALITY TESTS

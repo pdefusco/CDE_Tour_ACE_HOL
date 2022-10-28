@@ -61,7 +61,7 @@ import pyspark.sql.functions as F
 #               ENTER YOUR USERNAME HERE
 #---------------------------------------------------
 
-username = "user_test_2"
+username = "user_test_3"
 data_lake_name = "s3a://go01-demo/"
 
 #---------------------------------------------------

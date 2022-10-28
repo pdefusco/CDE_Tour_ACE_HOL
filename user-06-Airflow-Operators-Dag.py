@@ -12,10 +12,10 @@ from airflow.models import Variable
 
 
 default_args = {
-        'owner': 'pauldefusco',
+        'owner': 'user',
         'retry_delay': timedelta(seconds=5),
         'depends_on_past': False,
-        'start_date': pendulum.datetime(2020, 1, 1, tz="Europe/Amsterdam")
+        'start_date': pendulum.datetime(2020, 1, 1, tz="America/Seattle")
         }
 
 xcom_dag = DAG(
