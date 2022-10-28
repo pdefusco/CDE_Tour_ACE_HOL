@@ -53,7 +53,7 @@
 #                       TABLES: CUSTOMER_DATA
 #                               GEO_DATA_XREF
 #
-# #  Author(s): Nicolas Pelaez, George Rueda de Leon
+# #  Author(s): Paul de Fusco
 #***************************************************************************/
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
@@ -63,15 +63,14 @@ import pyspark.sql.functions as F
 #               ENTER YOUR USERNAME HERE
 #---------------------------------------------------
 
-data_lake_name = "s3a://go01-demo/"
-
+data_lake_name = "s3a://go01-demo/" # <--- Update data lake val
+s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv" # <--- Update bucket location
 # Your Username Here:
 username = "user_test_1"
 
 #---------------------------------------------------
 #               CREATE SPARK SESSION
 #---------------------------------------------------
-
 spark = SparkSession.builder.appName('Ingest').config("spark.yarn.access.hadoopFileSystems", data_lake_name).getOrCreate()
 
 #-----------------------------------------------------------------------------------
@@ -85,9 +84,8 @@ spark = SparkSession.builder.appName('Ingest').config("spark.yarn.access.hadoopF
 #                           Therefore, set variable as:
 #                                 s3BucketName = "s3a://usermarketing-cdp-demo"
 #-----------------------------------------------------------------------------------
-s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv"         # <--- Update bucket location
 car_installs  = spark.read.csv(s3BucketName + "/car_installs.csv",        header=True, inferSchema=True)
-car_sales     = spark.read.csv(s3BucketName + "/car_sales.csv",           header=True, inferSchema=True)
+car_sales     = spark.read.csv(s3BucketName + "/historical_car_sales.csv",           header=True, inferSchema=True)
 customer_data = spark.read.csv(s3BucketName + "/customer_data.csv",       header=True, inferSchema=True)
 factory_data  = spark.read.csv(s3BucketName + "/experimental_motors.csv", header=True, inferSchema=True)
 geo_data      = spark.read.csv(s3BucketName + "/postal_codes.csv",        header=True, inferSchema=True)

@@ -52,7 +52,7 @@ import sys
 import utils
 
 data_lake_name = "s3a://go01-demo/"
-
+s3BucketName = "s3a://go01-demo/cde-workshop/car-data/"
 # Your Username Here:
 username = "user_test_1"
 
@@ -74,20 +74,20 @@ car_sales_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".for
 customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_DATA".format(username))
 
 #---------------------------------------------------
-#               LOAD NEW BATCH DATA 
+#               LOAD NEW BATCH DATA
 #---------------------------------------------------
 
-batch_df = spark.read.csv(s3BucketName + "/10012020_car_sales.csv", header=True, inferSchema=True)
+batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, inferSchema=True)
 batch_df.write.mode("overwrite").registerTempTable('{}_CAR_DATA.CAR_SALES_TEMP'.format(username), format="parquet")
 
 
 #---------------------------------------------------
-#               ICEBERG MERGE INTO 
+#               ICEBERG MERGE INTO
 #---------------------------------------------------
 
-ICEBERG_MERGE_INTO = '''MERGE INTO spark_catalog.{}_CAR_DATA.CAR_SALES t 
-                            USING (SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP) s          
-                            ON t.CUSTOMER_ID = s.CUSTOMER_ID                
+ICEBERG_MERGE_INTO = '''MERGE INTO spark_catalog.{}_CAR_DATA.CAR_SALES t
+                            USING (SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP) s
+                            ON t.CUSTOMER_ID = s.CUSTOMER_ID
                             WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 THEN DELETE
                             WHEN NOT MATCHED THEN INSERT *'''.format(username)
 
@@ -177,5 +177,3 @@ model_sales_df.select(["model", "total_sales_by_model"]).sort(F.asc('model')).sh
 gender_sales_df = fact_df.groupBy("gender").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_gender")
 gender_sales_df = gender_sales_df.withColumn('total_sales_by_gender', gender_sales_df.sales_by_gender.cast(DecimalType(18, 2)))
 gender_sales_df.select(["gender", "total_sales_by_gender"]).sort(F.asc('gender')).show()
-
-
