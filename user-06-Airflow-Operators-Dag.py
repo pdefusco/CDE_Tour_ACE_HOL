@@ -1,60 +1,44 @@
 # Airflow DAG
-from datetime import datetime, timedelta
-from dateutil import parser
-import pendulum
-from airflow import DAG
 from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
-from cloudera.cdp.airflow.operators.cdw_operator import CDWOperator
 from airflow.operators.bash import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.http_operator import SimpleHttpOperator
-from airflow.models import Variable
-
+from datetime import datetime, timedelta
+from dateutil import parser
+from airflow import DAG
+import pendulum
+#from airflow.models import Variable
 
 default_args = {
         'owner': 'user',
         'retry_delay': timedelta(seconds=5),
         'depends_on_past': False,
-        'start_date': pendulum.datetime(2020, 1, 1, tz="America/Seattle")
+        'start_date': pendulum.datetime(2022, 10, 10, tz="America/Seattle")
         }
 
-xcom_dag = DAG(
-        'cde_xcom_dag',
+operators_dag = DAG(
+        'operators_dag',
         default_args=default_args,
         schedule_interval='@daily',
         catchup=False,
         is_paused_upon_creation=False
         )
 
-spark_step = CDEJobRunOperator(
+spark_sql_step1 = CDEJobRunOperator(
         task_id='sql_job_new',
-        dag=xcom_dag,
-        job_name='sql_job'
+        dag=operators_dag,
+        job_name='06_pysparksql'
         )
 
-shell = BashOperator(
+shell_step2 = BashOperator(
         task_id='bash',
-        dag=xcom_dag,
+        dag=operators_dag,
         bash_command='echo "Hello Airflow" '
         )
 
-cdw_query = """
-show databases;
-"""
-
-dw_step3 = CDWOperator(
-    task_id='dataset-etl-cdw',
-    dag=xcom_dag,
-    cli_conn_id='cdw_connection',
-    hql=cdw_query,
-    schema='default',
-    use_proxy_user=False,
-    query_isolation=True
-)
-
-also_run_this = BashOperator(
+shell_jinja_step3 = BashOperator(
     task_id='also_run_this',
-    dag=xcom_dag,
+    dag=operators_dag,
     bash_command='echo "yesterday={{ yesterday_ds }} | today={{ ds }}| tomorrow={{ tomorrow_ds }}"',
 )
 
@@ -62,15 +46,13 @@ also_run_this = BashOperator(
 def _print_context(**context):
     print(context)
 
-print_context = PythonOperator(
+print_context_step4 = PythonOperator(
     task_id="print_context",
     python_callable=_print_context,
-    dag=xcom_dag
+    dag=operators_dag
 )
 
-api_host = Variable.get("rapids_api_host")
-api_key = Variable.get("rapids_api_key")
-
+#api_host = Variable.get("ran")
 def handle_response(response):
     if response.status_code == 200:
         print("Received 200 Ok")
@@ -79,26 +61,23 @@ def handle_response(response):
         print("Error")
         return False
 
-http_task = SimpleHttpOperator(
-    task_id="chuck_norris_task",
+http_task_step5 = SimpleHttpOperator(
+    task_id="random_joke_api",
     method="GET",
-    http_conn_id="chuck_norris_connection",
-    endpoint="/jokes/random",
-    headers={"Content-Type":"application/json",
-            "X-RapidAPI-Key": api_key,
-            "X-RapidAPI-Host": api_host},
+    http_conn_id="random_joke_connection",
+    endpoint="https://official-joke-api.appspot.com/jokes/programming/random",
     response_check=lambda response: handle_response(response),
-    dag=xcom_dag,
+    dag=operators_dag,
     do_xcom_push=True
 )
 
-def _print_chuck_norris_quote(**context):
-    return context['ti'].xcom_pull(task_ids='chuck_norris_task')
+def _print_random_joke(**context):
+    return context['ti'].xcom_pull(task_ids='random_joke_api')
 
-return_quote = PythonOperator(
+random_joke_step6 = PythonOperator(
     task_id="print_quote",
-    python_callable=_print_chuck_norris_quote,
-    dag=xcom_dag
+    python_callable=_print_random_joke,
+    dag=operators_dag
 )
 
-spark_step >> shell >> dw_step3 >> also_run_this >> print_context >> http_task >> return_quote
+spark_sql_step1 >> shell_step2 >> shell_jinja_step3 >> print_context_step4 >> http_task_step5 >> random_joke_step6

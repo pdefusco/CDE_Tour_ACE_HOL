@@ -46,8 +46,6 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql.types import *
-from quinn.extensions import *
-import quinn
 import sys
 import utils
 
@@ -117,7 +115,6 @@ batch_etl_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
 print(car_sales_df.dtypes)
 print('\n')
 print(batch_df.dtypes)
-
 
 ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t\
                             USING (SELECT * FROM {0}_CAR_SALES_TEMP) s\

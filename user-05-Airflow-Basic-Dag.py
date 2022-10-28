@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from datetime import timezone
 from airflow import DAG
 from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
+from airflow.operators.dummy_operator import DummyOperator
 
 #DAG instantiation
 default_args = {
@@ -28,11 +29,19 @@ merge_into_step1 = CDEJobRunOperator(
     job_name='05_a_iceberg_mergeinto' #job_name needs to match the name assigned to the Spark CDE Job in the CDE UI
 )
 
-incremental_report_step2 = CDEJobRunOperator(
-    task_id='iceberg-incremental-report',
+incremental_report_step2 = DummyOperator(
+    task_id='dummy_task',
     dag=dag,
-    job_name='05_b_reports' #job_name needs to match the name assigned to the Spark CDE Job in the CDE UI
-)
+  )
+
+#incremental_report_step2 = CDEJobRunOperator(
+#    task_id='iceberg-incremental-report',
+#    dag=dag,
+#    job_name='05_b_reports' #job_name needs to match the name assigned to the Spark CDE Job in the CDE UI
+#)
+
+
+
 
 #Execute tasks in the below order
 merge_into_step1 >> incremental_report_step2
