@@ -52,7 +52,9 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "user_test_3"
+username = "test_user_110822_3"
+
+print("Running script with Username: {}", username)
 
 spark = SparkSession \
     .builder \
@@ -60,7 +62,6 @@ spark = SparkSession \
     .config("spark.sql.catalog.spark_catalog", "org.apache.iceberg.spark.SparkSessionCatalog")\
     .config("spark.sql.catalog.spark_catalog.type", "hive")\
     .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")\
-    .config("spark.sql.adaptive.enabled", "false")\
     .config("spark.yarn.access.hadoopFileSystems", data_lake_name)\
     .getOrCreate()
 
@@ -130,7 +131,6 @@ report_df.write.mode("overwrite").registerTempTable('{}_CAR_DATA.REPORT_FACT_TAB
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN CUSTOMER_ID".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN VIN".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN USERNAME".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN SALE_DATE".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN NAME".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN EMAIL".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN OCCUPATION".format(username))

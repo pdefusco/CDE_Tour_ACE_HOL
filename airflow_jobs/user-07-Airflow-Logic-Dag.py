@@ -7,8 +7,12 @@ from airflow import DAG
 import pendulum
 #from airflow.models import Variable
 
+username = 'test_user_110822_3'
+
+print("Running script with Username: {}", username)
+
 default_args = {
-        'owner': 'pauldefusco',
+        'owner': username,
         'retry_delay': timedelta(seconds=5),
         'depends_on_past': False,
         'start_date': pendulum.datetime(2020, 1, 1, tz="Europe/Amsterdam")

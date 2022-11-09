@@ -5,9 +5,13 @@ from airflow import DAG
 from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
 from airflow.operators.dummy_operator import DummyOperator
 
+username = "test_user_110822_3"
+
+print("Running script with Username: {}", username)
+
 #DAG instantiation
 default_args = {
-    'owner': 'user',
+    'owner': user,
     'retry_delay': timedelta(seconds=10),
     'depends_on_past': False,
     'start_date': datetime(2022,10,26,8),

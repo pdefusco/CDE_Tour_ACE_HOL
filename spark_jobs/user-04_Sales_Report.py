@@ -52,7 +52,9 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "user_test_3"
+username = "test_user_110822_3"
+
+print("Running script with Username: {}", username)
 
 spark = SparkSession \
     .builder \
@@ -60,7 +62,6 @@ spark = SparkSession \
     .config("spark.sql.catalog.spark_catalog", "org.apache.iceberg.spark.SparkSessionCatalog")\
     .config("spark.sql.catalog.spark_catalog.type", "hive")\
     .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")\
-    .config("spark.sql.adaptive.enabled", "false")\
     .config("spark.yarn.access.hadoopFileSystems", data_lake_name)\
     .getOrCreate()
 
@@ -76,35 +77,10 @@ customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_D
 #---------------------------------------------------
 
 batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, inferSchema=True)
-
-#---------------------------------------------------
-#                SIMPLE ETL
-#---------------------------------------------------
-
-# Adding month column to Sales Historical
-spark.sql("set spark.sql.legacy.timeParserPolicy=LEGACY")
-
-car_sales_df = car_sales_df.withColumn("date",F.to_date(F.col("sale_date"),"MM/dd/yyyy"))
-car_sales_df = car_sales_df.withColumn("month", F.month("date"))
-
-#car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
-car_sales_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES_ETL'.format(username), format="parquet")
-
-car_sales_etl_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_ETL".format(username))
-car_sales_etl_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
-
-# Adding month column to Sales Latest Batch
-batch_df = batch_df.withColumn("date",F.to_date(F.col("sale_date"),"MM/dd/yyyy"))
-batch_df = batch_df.withColumn("month", F.month("date"))
-
-#car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
-batch_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.BATCH_ETL'.format(username), format="parquet")
-
-batch_etl_df = spark.sql("SELECT * FROM {}_CAR_DATA.BATCH_ETL".format(username))
 #batch_etl_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
 
 # Creating Temp View for MERGE INTO command
-batch_etl_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
+batch_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
 
 #spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP")
 
@@ -116,11 +92,10 @@ print(car_sales_df.dtypes)
 print('\n')
 print(batch_df.dtypes)
 
-
 ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t\
                             USING (SELECT * FROM {0}_CAR_SALES_TEMP) s\
                             ON t.CUSTOMER_ID = s.CUSTOMER_ID\
-                            WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 AND s.DATE > '5/10/2020' THEN DELETE\
+                            WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 AND s.MONTH > 5 THEN DELETE\
                             WHEN NOT MATCHED THEN INSERT *".format(username)
 
 customer_data_df = spark.sql(ICEBERG_MERGE_INTO)
@@ -135,19 +110,6 @@ spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.history;".format(username)).show(
 # ICEBERG TABLE SNAPSHOTS (USEFUL FOR INCREMENTAL QUERIES AND TIME TRAVEL)
 spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username)).show()
 
-# GRAB FIRST AND LAST SNAPSHOT ID'S FROM SNAPSHOTS TABLE
-snapshots_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username))
-
-last_snapshot = snapshots_df.select("snapshot_id").tail(1)[0][0]
-first_snapshot = snapshots_df.select("snapshot_id").head(1)[0][0]
-
-# ICEBERG INCREMENTAL READ
-spark.read()\
-    .format("iceberg")\
-    .option("start-snapshot-id", first_snapshot)\
-    .option("end-snapshot-id", last_snapshot)\
-    .load("spark_catalog.{}_CAR_DATA.CAR_SALES").show()
-
 #---------------------------------------------------
 #               RUNNING DATA QUALITY TESTS
 #---------------------------------------------------
@@ -160,14 +122,18 @@ utils.test_column_presence(customer_data_df, ["customer_id"])
 car_sales_df = utils.test_null_presence_in_col(car_sales_df, "saleprice")
 
 # Test 3:
-customer_data_df = utils.test_values_not_in_col(customer_data_df, ["23356", "99803", "31750"], "zip")
+customer_data_df = utils.test_values_not_in_col(customer_data_df, ["99999", "11111", "00000"], "zip")
 
 #---------------------------------------------------
 #               JOIN CUSTOMER AND SALES DATA
 #---------------------------------------------------
 
 report_df = car_sales_df.join(customer_data_df, "customer_id")
-report_df.write.mode("overwrite").registerTempTable('{}_CAR_DATA.REPORT_FACT_TABLE'.format(username), format="parquet")
+report_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.REPORT_FACT_TABLE'.format(username), format="parquet")
+#report_df.createOrReplaceTempView('{}_REPORT_FACT_VIEW'.format(username))
+
+spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
+spark.sql("CALL spark_catalog.system.migrate('{}_CAR_DATA.REPORT_FACT_TABLE')".format(username))
 
 #---------------------------------------------------
 #               ICEBERG SCHEMA EVOLUTION
@@ -177,7 +143,6 @@ report_df.write.mode("overwrite").registerTempTable('{}_CAR_DATA.REPORT_FACT_TAB
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN CUSTOMER_ID".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN VIN".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN USERNAME".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN SALE_DATE".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN NAME".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN EMAIL".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN OCCUPATION".format(username))

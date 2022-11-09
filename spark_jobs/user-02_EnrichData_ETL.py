@@ -61,8 +61,10 @@ import pyspark.sql.functions as F
 #               ENTER YOUR USERNAME HERE
 #---------------------------------------------------
 
-username = "user_test_3"
+username = "test_user_110822_3"
 data_lake_name = "s3a://go01-demo/"
+
+print("Running script with Username: {}", username)
 
 #---------------------------------------------------
 #               CREATE SPARK SESSION
@@ -94,7 +96,7 @@ print(f"\tFILTER DATA (CUSTOMER_DATA): Before({before}), After ({after}), Differ
 #             JOIN DATA INTO ONE TABLE
 #---------------------------------------------------
 # SQL way to do things
-salesandcustomers_sql = "SELECT customers.*, sales.sale_date, sales.saleprice, sales.model, sales.VIN \
+salesandcustomers_sql = "SELECT customers.*, sales.saleprice, sales.model, sales.VIN \
                             FROM {0}_CAR_DATA.car_sales sales JOIN {0}_CAR_DATA.customer_data customers \
                              ON sales.customer_id = customers.customer_id ".format(username)
 tempTable = spark.sql(salesandcustomers_sql)

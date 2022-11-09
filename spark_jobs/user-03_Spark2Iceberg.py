@@ -51,7 +51,9 @@ data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/car-data/"
 
 # Your Username Here:
-username = "user_test_3"
+username = "test_user_110822_3"
+
+print("Running script with Username: {}", username)
 
 spark = SparkSession \
     .builder \
@@ -91,6 +93,11 @@ try:
     print("Migrated the Customer Data table to Iceberg Format.")
 except:
     print("The Customer Data table has already been migrated to Iceberg.")
+
+
+#### MODIFY TO VERSION 2 HERE ####
+
+
 
 # Iceberg comes with catalogs that enable SQL commands to manage tables and load them by name.
 # Catalogs are configured using properties under spark.sql.catalog.(catalog_name).
@@ -170,6 +177,28 @@ df = spark.read.option("as-of-timestamp", int(timestamp*1000)).format("iceberg")
 # POST TIME TRAVEL COUNT
 print("POST-TIME TRAVEL COUNT")
 print(df.count())
+
+#---------------------------------------------------
+#               INCREMENTAL READ
+#---------------------------------------------------
+
+# ICEBERG TABLE HISTORY (SHOWS EACH SNAPSHOT AND TIMESTAMP)
+spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.history;".format(username)).show()
+
+# ICEBERG TABLE SNAPSHOTS (USEFUL FOR INCREMENTAL QUERIES AND TIME TRAVEL)
+spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username)).show()
+
+# GRAB FIRST AND LAST SNAPSHOT ID'S FROM SNAPSHOTS TABLE
+snapshots_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username))
+
+last_snapshot = snapshots_df.select("snapshot_id").tail(1)[0][0]
+first_snapshot = snapshots_df.select("snapshot_id").head(1)[0][0]
+
+spark.read\
+    .format("iceberg")\
+    .option("start-snapshot-id", first_snapshot)\
+    .option("end-snapshot-id", last_snapshot)\
+    .load("spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 
 #---------------------------------------------------
 #               SAVE DATA TO PARQUET
