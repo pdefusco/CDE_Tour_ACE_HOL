@@ -122,7 +122,7 @@ utils.test_column_presence(customer_data_df, ["customer_id"])
 car_sales_df = utils.test_null_presence_in_col(car_sales_df, "saleprice")
 
 # Test 3:
-customer_data_df = utils.test_values_not_in_col(customer_data_df, ["99999", "11111", "00000"], "zip")
+#customer_data_df = utils.test_values_not_in_col(customer_data_df, ["99999", "11111", "00000"], "zip")
 
 #---------------------------------------------------
 #               JOIN CUSTOMER AND SALES DATA

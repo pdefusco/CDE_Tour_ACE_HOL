@@ -30,7 +30,7 @@ def test_null_presence_in_col(spark_df, col):
         print("Error During Test")
 
     return df
-
+'''
 def test_values_not_in_col(spark_df, value_list, col):
     print("Testing for exclusion of values: ")
     print(" ".join(value_list))
@@ -43,3 +43,4 @@ def test_values_not_in_col(spark_df, value_list, col):
         print("Error During Test")
 
     return df
+'''
