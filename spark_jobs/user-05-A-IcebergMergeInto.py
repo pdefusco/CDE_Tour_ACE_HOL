@@ -52,9 +52,9 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "test_user_110822_3"
+username = "test_user_111622_1"
 
-print("Running script with Username: {}", username)
+print("Running script with Username: ", username)
 
 spark = SparkSession \
     .builder \

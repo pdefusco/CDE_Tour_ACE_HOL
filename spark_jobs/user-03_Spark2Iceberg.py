@@ -51,9 +51,9 @@ data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/car-data/"
 
 # Your Username Here:
-username = "test_user_110822_3"
+username = "test_user_111622_1"
 
-print("Running script with Username: {}", username)
+print("Running script with Username: ", username)
 
 spark = SparkSession \
     .builder \
@@ -75,7 +75,7 @@ spark = SparkSession \
 #print(query_2)
 #spark.sql(query_2)
 
-spark.sql("SELECT * FROM {}_CAR_DATA.car_sales".format(username))
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.car_sales".format(username)).show()
 
 #----------------------------------------------------
 #               MIGRATE SPARK TABLES TO ICEBERG TABLE
@@ -96,8 +96,6 @@ except:
 
 
 #### MODIFY TO VERSION 2 HERE ####
-
-
 
 # Iceberg comes with catalogs that enable SQL commands to manage tables and load them by name.
 # Catalogs are configured using properties under spark.sql.catalog.(catalog_name).
@@ -130,8 +128,10 @@ except:
 #---------------------------------------------------
 
 spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.history".format(username)).show(20, False)
-
 spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots".format(username)).show(20, False)
+
+#spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.history".format(username)).show(20, False)
+#spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots".format(username)).show(20, False)
 
 # SAVE TIMESTAMP BEFORE INSERTS
 now = datetime.now()
@@ -165,7 +165,9 @@ spark.sql(query_5)
 #---------------------------------------------------
 
 # NOTICE SNAPSHOTS HAVE BEEN ADDED
-spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.history".format(username)).show(20, False)
+#spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.history".format(username)).show(20, False)
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.history".format(username)).show(20, False)
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots".format(username)).show(20, False)
 
 # POST-INSERT COUNT
 print("POST-INSERT COUNT")

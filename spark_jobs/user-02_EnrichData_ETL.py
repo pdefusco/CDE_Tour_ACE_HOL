@@ -61,10 +61,10 @@ import pyspark.sql.functions as F
 #               ENTER YOUR USERNAME HERE
 #---------------------------------------------------
 
-username = "test_user_110822_3"
+username = "test_user_111622_1"
 data_lake_name = "s3a://go01-demo/"
 
-print("Running script with Username: {}", username)
+print("Running script with Username: ", username)
 
 #---------------------------------------------------
 #               CREATE SPARK SESSION
