@@ -52,9 +52,9 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "test_user_111622_1"
+username = "test_user_111622_2"
 
-print("Running script with Username: {}", username)
+print("Running script with Username: ", username)
 
 spark = SparkSession \
     .builder \
@@ -95,10 +95,14 @@ print(batch_df.dtypes)
 ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t\
                             USING (SELECT * FROM {0}_CAR_SALES_TEMP) s\
                             ON t.CUSTOMER_ID = s.CUSTOMER_ID\
-                            WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 AND s.MONTH > 5 THEN DELETE\
+                            WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 THEN DELETE\
                             WHEN NOT MATCHED THEN INSERT *".format(username)
 
 customer_data_df = spark.sql(ICEBERG_MERGE_INTO)
+
+print('\n')
+print('Customer Data DF Columns')
+print(customer_data_df.dtypes)
 
 #---------------------------------------------------
 #               ICEBERG TABLE HISTORY AND SNAPSHOTS
