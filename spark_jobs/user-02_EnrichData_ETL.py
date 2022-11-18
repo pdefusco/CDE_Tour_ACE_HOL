@@ -61,7 +61,7 @@ import pyspark.sql.functions as F
 #               ENTER YOUR USERNAME HERE
 #---------------------------------------------------
 
-username = "test_user_111622_2"
+username = "test_user_111722_1"
 data_lake_name = "s3a://go01-demo/"
 
 print("Running script with Username: ", username)
