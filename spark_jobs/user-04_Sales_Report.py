@@ -82,7 +82,9 @@ batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, 
 # Creating Temp View for MERGE INTO command
 batch_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
 
-#spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP")
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+spark.sql("SELECT * FROM {}_CAR_SALES_TEMP".format(username)).show()
+
 
 #---------------------------------------------------
 #               ICEBERG MERGE INTO
