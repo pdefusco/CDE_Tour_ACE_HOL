@@ -135,11 +135,18 @@ car_sales_df = utils.test_null_presence_in_col(car_sales_df, "saleprice")
 #---------------------------------------------------
 
 report_df = car_sales_df.join(customer_data_df, "customer_id")
+
+spark.sql("DROP TABLE IF EXISTS spark_catalog.{}_CAR_DATA.REPORT_FACT_TABLE".format(username))
+spark.sql("DROP TABLE IF EXISTS {}_CAR_DATA.REPORT_FACT_TABLE".format(username))
+
 report_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.REPORT_FACT_TABLE'.format(username), format="parquet")
 #report_df.createOrReplaceTempView('{}_REPORT_FACT_VIEW'.format(username))
 
 spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
 spark.sql("CALL spark_catalog.system.migrate('{}_CAR_DATA.REPORT_FACT_TABLE')".format(username))
+
+
+print(report_df.dtypes)
 
 #---------------------------------------------------
 #               ICEBERG SCHEMA EVOLUTION
