@@ -7,7 +7,7 @@ from time import sleep
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "test_user_111722_2"
+username = "test_user_111822_3"
 
 print("Running script with Username: ", username)
 

@@ -52,7 +52,7 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "test_user_111722_2"
+username = "test_user_111822_3"
 
 print("Running script with Username: ", username)
 
@@ -85,29 +85,26 @@ batch_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
 spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 spark.sql("SELECT * FROM {}_CAR_SALES_TEMP".format(username)).show()
 
-
 #---------------------------------------------------
 #               ICEBERG MERGE INTO
 #---------------------------------------------------
 
-print(car_sales_df.dtypes)
-print('\n')
-print(batch_df.dtypes)
+# PRE-INSERT COUNT
+print("PRE-MERGE COUNT")
+spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 
-ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t USING {0}_CAR_SALES_TEMP s ON t.customer_id = s.customer_id WHEN NOT MATCHED THEN INSERT *".format(username)
+ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t USING {0}_CAR_SALES_TEMP s ON t.customer_id = s.customer_id WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *".format(username)
 
 '''
 s.model = 'Model Q' THEN UPDATE SET t.saleprice = t.saleprice - 100\
 WHEN MATCHED AND s.model = 'Model R' THEN UPDATE SET t.saleprice = t.saleprice + 10\
 '''
 
-customer_data_df = spark.sql(ICEBERG_MERGE_INTO)
+spark.sql(ICEBERG_MERGE_INTO)
 
-print('\n')
-print('Customer Data DF Columns')
-print(customer_data_df.dtypes)
-
-customer_data_df.show()
+# PRE-INSERT COUNT
+print("POST-MERGE COUNT")
+spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 
 #---------------------------------------------------
 #               ICEBERG TABLE HISTORY AND SNAPSHOTS
