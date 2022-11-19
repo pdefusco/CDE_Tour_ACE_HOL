@@ -60,8 +60,7 @@ import pyspark.sql.functions as F
 #---------------------------------------------------
 #               ENTER YOUR USERNAME HERE
 #---------------------------------------------------
-
-username = "test_user_111822_3"
+username = "test_user_111822_5"
 data_lake_name = "s3a://go01-demo/"
 
 print("Running script with Username: ", username)
@@ -99,6 +98,7 @@ print(f"\tFILTER DATA (CUSTOMER_DATA): Before({before}), After ({after}), Differ
 salesandcustomers_sql = "SELECT customers.*, sales.saleprice, sales.model, sales.VIN \
                             FROM {0}_CAR_DATA.car_sales sales JOIN {0}_CAR_DATA.customer_data customers \
                              ON sales.customer_id = customers.customer_id ".format(username)
+
 tempTable = spark.sql(salesandcustomers_sql)
 if (_DEBUG_):
     print("\tTABLE: CAR_SALES")

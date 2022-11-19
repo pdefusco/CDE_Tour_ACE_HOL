@@ -51,7 +51,7 @@ data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/car-data/"
 
 # Your Username Here:
-username = "test_user_111822_3"
+username = "test_user_111822_5"
 
 print("Running script with Username: ", username)
 

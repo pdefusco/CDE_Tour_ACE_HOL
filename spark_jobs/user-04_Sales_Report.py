@@ -52,7 +52,7 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "test_user_111822_3"
+username = "test_user_111822_5"
 
 print("Running script with Username: ", username)
 
@@ -90,21 +90,21 @@ spark.sql("SELECT * FROM {}_CAR_SALES_TEMP".format(username)).show()
 #---------------------------------------------------
 
 # PRE-INSERT COUNT
-print("PRE-MERGE COUNT")
-spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+#print("PRE-MERGE COUNT")
+#spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 
-ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t USING {0}_CAR_SALES_TEMP s ON t.customer_id = s.customer_id WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *".format(username)
+#ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t USING {0}_CAR_SALES_TEMP s ON t.customer_id = s.customer_id WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *".format(username)
 
 '''
 s.model = 'Model Q' THEN UPDATE SET t.saleprice = t.saleprice - 100\
 WHEN MATCHED AND s.model = 'Model R' THEN UPDATE SET t.saleprice = t.saleprice + 10\
 '''
 
-spark.sql(ICEBERG_MERGE_INTO)
+#spark.sql(ICEBERG_MERGE_INTO)
 
 # PRE-INSERT COUNT
-print("POST-MERGE COUNT")
-spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+#print("POST-MERGE COUNT")
+#spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 
 #---------------------------------------------------
 #               ICEBERG TABLE HISTORY AND SNAPSHOTS
@@ -134,56 +134,53 @@ car_sales_df = utils.test_null_presence_in_col(car_sales_df, "saleprice")
 #               JOIN CUSTOMER AND SALES DATA
 #---------------------------------------------------
 
-report_df = car_sales_df.join(customer_data_df, "customer_id")
+#report_df = car_sales_df.join(customer_data_df, "customer_id")
+#spark.sql("DROP TABLE IF EXISTS spark_catalog.{0}_CAR_DATA.CAR_SALES_REPORTS PURGE".format(username))
+spark.sql("CREATE OR REPLACE TABLE spark_catalog.{0}_CAR_DATA.SALES_REPORT USING ICEBERG AS SELECT s.MODEL, s.SALEPRICE, s.MONTH, c.SALARY, c.GENDER, c.EMAIL FROM spark_catalog.{0}_CAR_DATA.CAR_SALES s INNER JOIN spark_catalog.{0}_CAR_DATA.CUSTOMER_DATA c on s.CUSTOMER_ID = c.CUSTOMER_ID".format(username))
 
-spark.sql("DROP TABLE IF EXISTS spark_catalog.{}_CAR_DATA.REPORT_FACT_TABLE".format(username))
-spark.sql("DROP TABLE IF EXISTS {}_CAR_DATA.REPORT_FACT_TABLE".format(username))
+#customer_id|  model|saleprice|         VIN|month|year|day|
 
-report_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.REPORT_FACT_TABLE'.format(username), format="parquet")
+#print("Report DF Show")
+#report_df.show()
+
+#spark.sql("DROP TABLE IF EXISTS spark_catalog.{}_CAR_DATA.REPORT_TABLE".format(username))
+#spark.sql("DROP TABLE IF EXISTS {}_CAR_DATA.REPORT_TABLE".format(username))
+
+#report_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.REPORT_TABLE'.format(username), format="parquet")
 #report_df.createOrReplaceTempView('{}_REPORT_FACT_VIEW'.format(username))
 
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
-spark.sql("CALL spark_catalog.system.migrate('{}_CAR_DATA.REPORT_FACT_TABLE')".format(username))
-
-
-print(report_df.dtypes)
+#spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_TABLE UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
+#spark.sql("CALL spark_catalog.system.migrate('{}_CAR_DATA.REPORT_TABLE')".format(username))
+#print(report_df.dtypes)
 
 #---------------------------------------------------
 #               ICEBERG SCHEMA EVOLUTION
 #---------------------------------------------------
 
 # DROP COLUMNS
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN CUSTOMER_ID".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN VIN".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN USERNAME".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN NAME".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN EMAIL".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN OCCUPATION".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN BIRTHDATE".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN ADDRESS".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN SALARY".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE DROP COLUMN ZIP".format(username))
+#spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES_REPORT DROP COLUMN CUSTOMER_ID".format(username))
+spark.sql("ALTER TABLE {}_CAR_DATA.SALES_REPORT DROP COLUMN EMAIL".format(username))
 
 # CAST COLUMN TO FLOAT
-spark.sql("ALTER TABLE {}_CAR_DATA.REPORT_FACT_TABLE COLUMN SALEPRICE FLOAT".format(username))
+spark.sql("ALTER TABLE {}_CAR_DATA.SALES_REPORT ALTER COLUMN MONTH TYPE BIGINT".format(username))
 
 #---------------------------------------------------
 #               ANALYTICAL QUERIES
 #---------------------------------------------------
 
-fact_df = spark.sql("SELECT * FROM {}_CAR_DATA.REPORT_FACT_TABLE".format(username))
+reports_df = spark.sql("SELECT * FROM {}_CAR_DATA.SALES_REPORT".format(username))
 
 #GROUP TOTAL SALES BY MONTH
-month_sales_df = fact_df.groupBy("Month").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_month")
+month_sales_df = reports_df.groupBy("Month").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_month")
 month_sales_df = month_sales_df.withColumn('total_sales_by_month', month_sales_df.sales_by_month.cast(DecimalType(18, 2)))
 month_sales_df.select(["Month", "total_sales_by_month"]).sort(F.asc('Month')).show()
 
 #GROUP TOTAL SALES BY MODEL
-model_sales_df = fact_df.groupBy("model").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_model")
+model_sales_df = reports_df.groupBy("model").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_model")
 model_sales_df = model_sales_df.withColumn('total_sales_by_model', model_sales_df.sales_by_model.cast(DecimalType(18, 2)))
 model_sales_df.select(["model", "total_sales_by_model"]).sort(F.asc('model')).show()
 
 #GROUP TOTAL SALES BY GENDER
-gender_sales_df = fact_df.groupBy("gender").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_gender")
+gender_sales_df = reports_df.groupBy("gender").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_gender")
 gender_sales_df = gender_sales_df.withColumn('total_sales_by_gender', gender_sales_df.sales_by_gender.cast(DecimalType(18, 2)))
 gender_sales_df.select(["gender", "total_sales_by_gender"]).sort(F.asc('gender')).show()
