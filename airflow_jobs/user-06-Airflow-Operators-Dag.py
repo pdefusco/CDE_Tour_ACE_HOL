@@ -25,7 +25,7 @@ dag_name = '{}-06-airflow-tour-dag'.format(username)
 airflow_tour_dag = DAG(
         dag_name,
         default_args=default_args,
-        schedule_interval='@daily',
+        schedule_interval='@yearly',
         catchup=False,
         is_paused_upon_creation=False
         )

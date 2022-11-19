@@ -15,7 +15,7 @@ default_args = {
     'owner': "pauldefusco",
     'retry_delay': timedelta(seconds=10),
     'depends_on_past': False,
-    'start_date': datetime(2022,10,26,8),
+    'start_date': datetime(2022,11,22,8),
     'end_date': datetime(2023,9,30)
 }
 
