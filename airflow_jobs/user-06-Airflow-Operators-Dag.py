@@ -9,19 +9,22 @@ from airflow import DAG
 import pendulum
 #from airflow.models import Variable
 
-username = 'test_user_110822_3'
+username = 'test_user_111822_5'
 
 print("Running script with Username: {}", username)
 
 default_args = {
-        'owner': username,
+        'owner': "pauldefusco",
         'retry_delay': timedelta(seconds=5),
         'depends_on_past': False,
-        'start_date': pendulum.datetime(2020, 1, 1, tz="Europe/Amsterdam")
+        'start_date': pendulum.datetime(2020, 1, 1, tz="Europe/Amsterdam"),
+        'end_date': datetime(2023,9,30)
         }
 
+dag_name = '{}-06-airflow-tour-dag'.format(username)
+
 operators_dag = DAG(
-        '06-airflow-operators-dag',
+        dag_name,
         default_args=default_args,
         schedule_interval='@daily',
         catchup=False,
@@ -29,7 +32,7 @@ operators_dag = DAG(
         )
 
 spark_sql_step1 = CDEJobRunOperator(
-        task_id='sql_job_new',
+        task_id='pyspark_sql_job',
         dag=operators_dag,
         job_name='06_pysparksql'
         )

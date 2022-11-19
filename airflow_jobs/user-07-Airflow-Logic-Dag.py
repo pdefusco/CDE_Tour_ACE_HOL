@@ -7,7 +7,7 @@ from airflow import DAG
 import pendulum
 #from airflow.models import Variable
 
-username = 'test_user_110822_3'
+username = 'test_user_111822_5'
 
 print("Running script with Username: {}", username)
 
@@ -18,8 +18,10 @@ default_args = {
         'start_date': pendulum.datetime(2020, 1, 1, tz="Europe/Amsterdam")
         }
 
+dag_name = '{}-07-airflow-logic-dag'.format(username)
+
 logic_dag = DAG(
-        '07-airflow-logic-dag',
+        dag_name,
         default_args=default_args,
         schedule_interval='@daily',
         catchup=False,
