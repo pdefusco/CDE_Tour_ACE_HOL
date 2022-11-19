@@ -6,24 +6,23 @@ from airflow.operators.http_operator import SimpleHttpOperator
 from datetime import datetime, timedelta
 from dateutil import parser
 from airflow import DAG
-import pendulum
 #from airflow.models import Variable
 
-username = 'test_user_111822_5'
+username = "test_user_111822_5"
 
-print("Running script with Username: {}", username)
+print("Running script with Username: ", username)
 
 default_args = {
-        'owner': "pauldefusco",
-        'retry_delay': timedelta(seconds=5),
-        'depends_on_past': False,
-        'start_date': pendulum.datetime(2020, 1, 1, tz="Europe/Amsterdam"),
-        'end_date': datetime(2023,9,30)
-        }
+    'owner': "pauldefusco",
+    'retry_delay': timedelta(seconds=30),
+    'depends_on_past': False,
+    'start_date': datetime(2022,11,20,8),
+    'end_date': datetime(2023,9,30)
+}
 
 dag_name = '{}-06-airflow-tour-dag'.format(username)
 
-operators_dag = DAG(
+airflow_tour_dag = DAG(
         dag_name,
         default_args=default_args,
         schedule_interval='@daily',
@@ -32,20 +31,20 @@ operators_dag = DAG(
         )
 
 spark_sql_step1 = CDEJobRunOperator(
-        task_id='pyspark_sql_job',
-        dag=operators_dag,
+        task_id='sql_job',
+        dag=airflow_tour_dag,
         job_name='06_pysparksql'
         )
 
 shell_step2 = BashOperator(
-        task_id='bash',
-        dag=operators_dag,
+        task_id='bash_scripting',
+        dag=airflow_tour_dag,
         bash_command='echo "Hello Airflow" '
         )
 
 shell_jinja_step3 = BashOperator(
     task_id='bash_with_jinja',
-    dag=operators_dag,
+    dag=airflow_tour_dag,
     bash_command='echo "yesterday={{ yesterday_ds }} | today={{ ds }}| tomorrow={{ tomorrow_ds }}"',
 )
 
@@ -56,7 +55,7 @@ def _print_context(**context):
 print_context_step4 = PythonOperator(
     task_id="print_context",
     python_callable=_print_context,
-    dag=operators_dag
+    dag=airflow_tour_dag
 )
 
 #api_host = Variable.get("ran")
@@ -75,7 +74,7 @@ http_task_step5 = SimpleHttpOperator(
     endpoint="/jokes/programming/random",
     headers={"Content-Type":"application/json"},
     response_check=lambda response: handle_response(response),
-    dag=operators_dag,
+    dag=airflow_tour_dag,
     do_xcom_push=True
 )
 
@@ -85,7 +84,7 @@ def _print_random_joke(**context):
 random_joke_step6 = PythonOperator(
     task_id="print_random_joke",
     python_callable=_print_random_joke,
-    dag=operators_dag
+    dag=airflow_tour_dag
 )
 
 spark_sql_step1 >> shell_step2 >> shell_jinja_step3 >> print_context_step4 >> http_task_step5 >> random_joke_step6

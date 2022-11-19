@@ -3,13 +3,12 @@ from datetime import datetime, timedelta
 from datetime import timezone
 from airflow import DAG
 from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
-from airflow.operators.dummy_operator import DummyOperator
 
 username = "test_user_111822_5"
 cde_job_name_05_A = "05_a_iceberg_mergeinto" #Replace with CDE Job Name for Script 5 A
 cde_job_name_05_B = "05_b_reports"  #Replace with CDE Job Name for Script 5 B
 
-print("Running script with Username: {}", username)
+print("Running script with Username: ", username)
 
 #DAG instantiation
 default_args = {
