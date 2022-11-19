@@ -77,28 +77,20 @@ customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_D
 #---------------------------------------------------
 
 batch_df = spark.read.csv(s3BucketName + "12312020_car_sales.csv", header=True, inferSchema=True)
-## WRITE THIS AS A PARQUET TABLE AND THEN MIGRATE IT TO ICEBERG
-#car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
-#batch_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.BATCH_ETL'.format(username), format="parquet")
-
-#batch_etl_df = spark.sql("SELECT * FROM {}_CAR_DATA.BATCH_ETL".format(username))
 #batch_etl_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+
 # Creating Temp View for MERGE INTO command
-batch_etl_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
-#spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES_TEMP")
+batch_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
+
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+spark.sql("SELECT * FROM {}_CAR_SALES_TEMP".format(username)).show()
 
 #---------------------------------------------------
 #               ICEBERG MERGE INTO
 #---------------------------------------------------
 
-print(car_sales_df.dtypes)
-print('\n')
-print(batch_df.dtypes)
+ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t USING {0}_CAR_SALES_TEMP s ON t.CUSTOMER_ID = s.CUSTOMER_ID WHEN MATCHED AND s.model = 'Model R' THEN UPDATE SET t.saleprice = t.saleprice - 100 WHEN NOT MATCHED THEN INSERT *".format(username)
 
-ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t\
-                            USING (SELECT * FROM {0}_CAR_SALES_TEMP) s\
-                            ON t.CUSTOMER_ID = s.CUSTOMER_ID\
-                            WHEN MATCHED AND s.MODEL = 'Model C' AND s.SALEPRICE > 100000 AND s.MONTH > 5 THEN DELETE\
-                            WHEN NOT MATCHED THEN INSERT *".format(username)
+spark.sql(ICEBERG_MERGE_INTO)
 
-customer_data_df = spark.sql(ICEBERG_MERGE_INTO)
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES WHERE MONTH > 9 LIMIT 10".format(username))
