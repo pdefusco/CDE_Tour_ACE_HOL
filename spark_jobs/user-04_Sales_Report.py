@@ -171,16 +171,16 @@ spark.sql("ALTER TABLE {}_CAR_DATA.SALES_REPORT ALTER COLUMN MONTH TYPE BIGINT".
 reports_df = spark.sql("SELECT * FROM {}_CAR_DATA.SALES_REPORT".format(username))
 
 #GROUP TOTAL SALES BY MONTH
-month_sales_df = reports_df.groupBy("Month").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_month")
+month_sales_df = reports_df.groupBy("Model").sum("Salary").na.drop().sort(F.asc('sum(Salary)')).withColumnRenamed("sum(Salary)", "sales_by_month")
 month_sales_df = month_sales_df.withColumn('total_sales_by_month', month_sales_df.sales_by_month.cast(DecimalType(18, 2)))
-month_sales_df.select(["Month", "total_sales_by_month"]).sort(F.asc('Month')).show()
+month_sales_df.select(["Model", "total_sales_by_month"]).sort(F.asc('Model')).show()
 
 #GROUP TOTAL SALES BY MODEL
-model_sales_df = reports_df.groupBy("model").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_model")
+model_sales_df = reports_df.groupBy("Model").sum("Saleprice").na.drop().sort(F.asc('sum(Saleprice)')).withColumnRenamed("sum(Saleprice)", "sales_by_model")
 model_sales_df = model_sales_df.withColumn('total_sales_by_model', model_sales_df.sales_by_model.cast(DecimalType(18, 2)))
-model_sales_df.select(["model", "total_sales_by_model"]).sort(F.asc('model')).show()
+model_sales_df.select(["Model", "total_sales_by_model"]).sort(F.asc('Model')).show()
 
 #GROUP TOTAL SALES BY GENDER
-gender_sales_df = reports_df.groupBy("gender").sum("Price").na.drop().sort(F.asc('sum(Price)')).withColumnRenamed("sum(Price)", "sales_by_gender")
+gender_sales_df = reports_df.groupBy("Gender").sum("Saleprice").na.drop().sort(F.asc('sum(Saleprice)')).withColumnRenamed("sum(Saleprice)", "sales_by_gender")
 gender_sales_df = gender_sales_df.withColumn('total_sales_by_gender', gender_sales_df.sales_by_gender.cast(DecimalType(18, 2)))
-gender_sales_df.select(["gender", "total_sales_by_gender"]).sort(F.asc('gender')).show()
+gender_sales_df.select(["Gender", "total_sales_by_gender"]).sort(F.asc('Gender')).show()
