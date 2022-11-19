@@ -9,7 +9,7 @@ import pendulum
 
 username = 'test_user_111822_5'
 
-print("Running script with Username: {}", username)
+print("Running script with Username: ", username)
 
 default_args = {
         'owner': username,
