@@ -37,119 +37,38 @@
 # #  Author(s): Paul de Fusco
 #***************************************************************************/
 
-# NB: THIS SCRIPT REQUIRES A SPARK 3 CLUSTER
+from pyspark.sql import SparkSession
+#from pyspark.sql.functions import *
+import pyspark.sql.functions as F
+from pyspark.sql.window import Window
+import sys
+#from pyspark.sql.functions import year, month, dayofmonth, dayofweek, dayofyear, weekofyear
+
+#---------------------------------------------------
+#               ENTER YOUR USERNAME HERE
+#---------------------------------------------------
+username = "test_user_111822_5"
+data_lake_name = "s3a://go01-demo/"
+
+print("Running script with Username: ", username)
 
 #---------------------------------------------------
 #               CREATE SPARK SESSION
 #---------------------------------------------------
+spark = SparkSession\
+            .builder\
+            .appName('CAR INSTALLS REPORT')\
+            .config("spark.yarn.access.hadoopFileSystems", data_lake_name)\
+            .getOrCreate()
 
-from pyspark.sql import SparkSession
-import pyspark.sql.functions as F
-from pyspark.sql.types import *
-import sys
-import utils
+installs_etl_step2_df = spark.sql("SELECT * FROM {}_CAR_DATA.INSTALLS_ETL".format(username))
 
-data_lake_name = "s3a://go01-demo/"
-s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
-# Your Username Here:
-username = "test_user_111822_5"
+print("Report: Weekly Count of Parts Installed")
+installs_etl_step3_df = installs_etl_step2_df.drop("timestamp").groupBy("weekofyear").count().orderBy("weekofyear", asc=True)
+installs_etl_step3_df.show()
 
-print("Running script with Username: ", username)
+print("Report: Weekly Cumulative of Parts Installed")
+installs_etl_step4_df = installs_etl_step3_df.withColumn('count_percent',F.col('count')/F.sum('count').over(Window.partitionBy())*100)
+installs_etl_step5_df = installs_etl_step4_df.withColumn('cum_percent', F.sum(installs_etl_step4_df.count_percent).over(Window.partitionBy().orderBy().rowsBetween(-sys.maxsize, 0)))
+installs_etl_step5_df.show()
 
-spark = SparkSession \
-    .builder \
-    .appName("Car Sales Report") \
-    .config("spark.sql.catalog.spark_catalog", "org.apache.iceberg.spark.SparkSessionCatalog")\
-    .config("spark.sql.catalog.spark_catalog.type", "hive")\
-    .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")\
-    .config("spark.yarn.access.hadoopFileSystems", data_lake_name)\
-    .getOrCreate()
-
-#spark.sql("USE spark_catalog.{}_CAR_DATA".format(username))
-#spark.sql("SHOW CURRENT NAMESPACE").show()
-
-#---------------------------------------------------
-#               ICEBERG TABLE HISTORY AND SNAPSHOTS
-#---------------------------------------------------
-
-spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.history".format(username)).show(20, False)
-spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots".format(username)).show(20, False)
-
-# ICEBERG TABLE HISTORY (SHOWS EACH SNAPSHOT AND TIMESTAMP)
-#spark.sql("SELECT * FROM CAR_SALES.history;".format(username)).show()
-
-# ICEBERG TABLE SNAPSHOTS (USEFUL FOR INCREMENTAL QUERIES AND TIME TRAVEL)
-#spark.sql("SELECT * FROM CAR_SALES.snapshots;".format(username)).show()
-
-# GRAB FIRST AND LAST SNAPSHOT ID'S FROM SNAPSHOTS TABLE
-snapshots_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots;".format(username))
-
-last_snapshot = snapshots_df.select("snapshot_id").tail(1)[0][0]
-first_snapshot = snapshots_df.select("snapshot_id").head(1)[0][0]
-
-# ICEBERG INCREMENTAL READ
-#spark.read\
-#    .format("iceberg")\
-#    .option("start-snapshot-id", first_snapshot)\
-#    .option("end-snapshot-id", last_snapshot)\
-#    .load("spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
-
-#---------------------------------------------------
-#               LOAD ICEBERG TABLES AS DATAFRAMES
-#---------------------------------------------------
-
-car_sales_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
-customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_DATA".format(username))
-
-#---------------------------------------------------
-#               RUNNING DATA QUALITY TESTS
-#---------------------------------------------------
-
-# Test 1: Ensure Customer ID is Present so Join Can Happen
-utils.test_column_presence(car_sales_df, ["customer_id"])
-utils.test_column_presence(customer_data_df, ["customer_id"])
-
-# Test 2: Spot Nulls or Blanks in Customer Data Sale Price Column:
-car_sales_df = utils.test_null_presence_in_col(car_sales_df, "saleprice")
-
-# Test 3:
-#customer_data_df = utils.test_values_not_in_col(customer_data_df, ["23356", "99803", "31750"], "zip")
-
-#---------------------------------------------------
-#               JOIN CUSTOMER AND SALES DATA
-#---------------------------------------------------
-
-#spark.sql("DROP TABLE IF EXISTS spark_catalog.{0}_CAR_DATA.CAR_SALES_REPORTS PURGE".format(username))
-spark.sql("CREATE OR REPLACE TABLE spark_catalog.{0}_CAR_DATA.SLS_REPORT USING ICEBERG AS SELECT s.MODEL, s.SALEPRICE, c.SALARY, c.GENDER, c.EMAIL FROM spark_catalog.{0}_CAR_DATA.CAR_SALES s INNER JOIN spark_catalog.{0}_CAR_DATA.CUSTOMER_DATA c on s.CUSTOMER_ID = c.CUSTOMER_ID".format(username))
-
-#---------------------------------------------------
-#               ICEBERG SCHEMA EVOLUTION
-#---------------------------------------------------
-
-# DROP COLUMNS
-#spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES_REPORT DROP COLUMN CUSTOMER_ID".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.SLS_REPORT DROP COLUMN EMAIL".format(username))
-
-# CAST COLUMN TO FLOAT
-#spark.sql("ALTER TABLE {}_CAR_DATA.SALES_REPORT ALTER COLUMN MONTH TYPE BIGINT".format(username))
-
-#---------------------------------------------------
-#               ANALYTICAL QUERIES
-#---------------------------------------------------
-
-reports_df = spark.sql("SELECT * FROM {}_CAR_DATA.SLS_REPORT".format(username))
-
-#GROUP TOTAL SALES BY MONTH
-month_sales_df = reports_df.groupBy("Model").sum("Salary").na.drop().sort(F.asc('sum(Salary)')).withColumnRenamed("sum(Salary)", "sales_by_month")
-month_sales_df = month_sales_df.withColumn('total_sales_by_month', month_sales_df.sales_by_month.cast(DecimalType(18, 2)))
-month_sales_df.select(["Model", "total_sales_by_month"]).sort(F.asc('Model')).show()
-
-#GROUP TOTAL SALES BY MODEL
-model_sales_df = reports_df.groupBy("Model").sum("Saleprice").na.drop().sort(F.asc('sum(Saleprice)')).withColumnRenamed("sum(Saleprice)", "sales_by_model")
-model_sales_df = model_sales_df.withColumn('total_sales_by_model', model_sales_df.sales_by_model.cast(DecimalType(18, 2)))
-model_sales_df.select(["Model", "total_sales_by_model"]).sort(F.asc('Model')).show()
-
-#GROUP TOTAL SALES BY GENDER
-gender_sales_df = reports_df.groupBy("Gender").sum("Saleprice").na.drop().sort(F.asc('sum(Saleprice)')).withColumnRenamed("sum(Saleprice)", "sales_by_gender")
-gender_sales_df = gender_sales_df.withColumn('total_sales_by_gender', gender_sales_df.sales_by_gender.cast(DecimalType(18, 2)))
-gender_sales_df.select(["Gender", "total_sales_by_gender"]).sort(F.asc('Gender')).show()
