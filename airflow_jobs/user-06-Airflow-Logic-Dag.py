@@ -50,5 +50,35 @@ spark_sql_join_step3 = CDEJobRunOperator(
         job_name='07_C_Join'
         )
 
+#api_host = Variable.get("ran")
+def handle_response(response):
+    if response.status_code == 200:
+        print("Received 200 Ok")
+        return True
+    else:
+        print("Error")
+        return False
+
+apicall_step4 = SimpleHttpOperator(
+    task_id="random_joke_api",
+    method="GET",
+    http_conn_id="random_joke_connection",
+    endpoint="/jokes/programming/random",
+    headers={"Content-Type":"application/json"},
+    response_check=lambda response: handle_response(response),
+    dag=airflow_tour_dag,
+    do_xcom_push=True
+)
+
+def _print_random_joke(**context):
+    return context['ti'].xcom_pull(task_ids='random_joke_api')
+
+apiresponse_step5 = PythonOperator(
+    task_id="print_random_joke",
+    python_callable=_print_random_joke,
+    dag=airflow_tour_dag
+)
+
 # The spark_sql_join_step3 task only executes when both spark_sql_left_step1 and spark_sql__right_step2 have completed
-start >> [spark_sql_left_step1, spark_sql__right_step2] >> spark_sql_join_step3
+start >> [spark_sql_left_step1, spark_sql__right_step2] >> spark_sql_join_step3 >> apicall_step4 >> apiresponse_step5
+
