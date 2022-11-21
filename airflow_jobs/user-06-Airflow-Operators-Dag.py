@@ -20,7 +20,7 @@ default_args = {
     'end_date': datetime(2023,9,30)
 }
 
-dag_name = '{}-06-airflow-tour-dag_3'.format(username)
+dag_name = '{}-06-airflow-tour-dag'.format(username)
 
 airflow_tour_dag = DAG(
         'dagging3',
