@@ -60,7 +60,7 @@ default_args = {
     'end_date': datetime(2023,9,30)
 }
 
-dag_name = '{}-05-airflow-pipeline'.format(username)
+dag_name = '{}-05-airflow-pipeline_1'.format(username)
 
 intro_dag = DAG(
     dag_name,
@@ -72,20 +72,20 @@ intro_dag = DAG(
 
 #Using the CDEJobRunOperator
 step1 = CDEJobRunOperator(
-  task_id='iceberg-merge-into',
+  task_id='etl',
   dag=intro_dag,
   job_name=cde_job_name_05_A #job_name needs to match the name assigned to the Spark CDE Job in the CDE UI
 )
 
 step2 = CDEJobRunOperator(
-    task_id='sales-report',
+    task_id='report',
     dag=intro_dag,
     job_name=cde_job_name_05_B #job_name needs to match the name assigned to the Spark CDE Job in the CDE UI
 )
 
 step3 = BashOperator(
-        task_id='bash_scripting',
-        dag=airflow_tour_dag,
+        task_id='bash',
+        dag=intro_dag,
         bash_command='echo "Hello Airflow" '
         )
 
@@ -100,7 +100,7 @@ def _print_context(**context):
     print(context)
 
 step5 = PythonOperator(
-    task_id="print_context",
+    task_id="print_context_vars",
     python_callable=_print_context,
     dag=intro_dag
 )
