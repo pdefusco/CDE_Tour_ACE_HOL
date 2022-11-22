@@ -10,6 +10,9 @@ import pendulum
 #from airflow.models import Variable
 
 username = 'test_user_112122_1'
+cde_job_name_07_A = '07_A_pyspark_LEFT'
+cde_job_name_07_B = '07_B_pyspark_RIGHT'
+cde_job_name_07_C = '07_C_pyspark_JOIN'
 
 print("Running script with Username: ", username)
 
@@ -22,7 +25,7 @@ default_args = {
 
 dag_name = '{}-07-airflow-logic-dag'.format(username)
 
-logic_dag = DAG(
+airflow_tour_dag = DAG(
         dag_name,
         default_args=default_args,
         schedule_interval='@daily',
@@ -36,20 +39,20 @@ start = DummyOperator(
 
 spark_sql_left_step1 = CDEJobRunOperator(
         task_id='create-left-table',
-        dag=logic_dag,
-        job_name='07_A_Left'
+        dag=airflow_tour_dag,
+        job_name=cde_job_name_07_A
         )
 
-spark_sql__right_step2 = CDEJobRunOperator(
+spark_sql_right_step2 = CDEJobRunOperator(
         task_id='create-right-table',
-        dag=logic_dag,
-        job_name='07_B_Right'
+        dag=airflow_tour_dag,
+        job_name=cde_job_name_07_B
         )
 
 spark_sql_join_step3 = CDEJobRunOperator(
         task_id='join-tables',
-        dag=logic_dag,
-        job_name='07_C_Join'
+        dag=airflow_tour_dag,
+        job_name=cde_job_name_07_C
         )
 
 #api_host = Variable.get("ran")
@@ -82,4 +85,4 @@ apiresponse_step5 = PythonOperator(
 )
 
 # The spark_sql_join_step3 task only executes when both spark_sql_left_step1 and spark_sql__right_step2 have completed
-start >> [spark_sql_left_step1, spark_sql__right_step2] >> spark_sql_join_step3 >> apicall_step4 >> apiresponse_step5
+start >> [spark_sql_left_step1, spark_sql_right_step2] >> spark_sql_join_step3 >> apicall_step4 >> apiresponse_step5
