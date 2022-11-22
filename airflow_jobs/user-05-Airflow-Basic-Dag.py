@@ -43,11 +43,11 @@ from datetime import timezone
 from airflow import DAG
 from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
 from airflow.operators.bash import BashOperator
+from airflow.operators.python_operator import PythonOperator
 
-
-username = "test_user_111822_5"
-cde_job_name_05_A = "05_a_etl" #Replace with CDE Job Name for Script 5 A
-cde_job_name_05_B = "05_b_reports"  #Replace with CDE Job Name for Script 5 B
+username = "test_user_112122_1"
+cde_job_name_05_A = "05_A_ETL" #Replace with CDE Job Name for Script 5 A
+cde_job_name_05_B = "05_B_Reports"  #Replace with CDE Job Name for Script 5 B
 
 print("Running script with Username: ", username)
 
@@ -107,4 +107,3 @@ print_context_step4 = PythonOperator(
 
 #Execute tasks in the below order
 step1 >> step2 >> step3 >> step4
-

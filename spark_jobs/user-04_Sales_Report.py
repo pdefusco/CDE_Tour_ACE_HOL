@@ -52,7 +52,7 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "test_user_1112122_5"
+username = "test_user_112122_1"
 print("\n")
 print("Running script with Username: ", username)
 

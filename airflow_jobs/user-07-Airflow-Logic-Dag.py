@@ -1,13 +1,15 @@
 # Airflow DAG
 from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.python_operator import PythonOperator
+from airflow.operators.http_operator import SimpleHttpOperator
 from datetime import datetime, timedelta
 from dateutil import parser
 from airflow import DAG
 import pendulum
 #from airflow.models import Variable
 
-username = 'test_user_111822_5'
+username = 'test_user_112122_1'
 
 print("Running script with Username: ", username)
 
@@ -81,4 +83,3 @@ apiresponse_step5 = PythonOperator(
 
 # The spark_sql_join_step3 task only executes when both spark_sql_left_step1 and spark_sql__right_step2 have completed
 start >> [spark_sql_left_step1, spark_sql__right_step2] >> spark_sql_join_step3 >> apicall_step4 >> apiresponse_step5
-

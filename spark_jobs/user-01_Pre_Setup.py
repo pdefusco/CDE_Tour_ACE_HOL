@@ -53,7 +53,7 @@ import pyspark.sql.functions as F
 data_lake_name = "s3a://go01-demo/" # <--- Update data lake val
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv" # <--- Update bucket location
 # Your Username Here:
-username = "test_user_1112122_5"
+username = "test_user_112122_1"
 
 print("Running script with Username: ", username)
 
@@ -105,7 +105,7 @@ print('car_sales.repartition(12, "month")')
 car_sales = car_sales.repartition(12, "month")
 print("\n")
 print("New Number of Partitions")
-car_sales.rdd.getNumPartitions())
+print(car_sales.rdd.getNumPartitions())
 
 #---------------------------------------------------
 #               POPULATE TABLES
