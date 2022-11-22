@@ -9,7 +9,7 @@ from airflow import DAG
 import pendulum
 #from airflow.models import Variable
 
-username = 'test_user_112122_1'
+username = 'test_user_112222_3'
 cde_job_name_07_A = '07_A_pyspark_LEFT'
 cde_job_name_07_B = '07_B_pyspark_RIGHT'
 cde_job_name_07_C = '07_C_pyspark_JOIN'

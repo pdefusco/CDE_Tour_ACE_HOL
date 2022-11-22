@@ -51,7 +51,7 @@ data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/car-data/"
 
 # Your Username Here:
-username = "test_user_112122_1"
+username = "test_user_112222_4"
 
 print("Running script with Username: ", username)
 
@@ -65,24 +65,49 @@ spark = SparkSession \
     .getOrCreate()
 
 print("TOP 20 ROWS IN CAR SALES TABLE")
-spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.car_sales".format(username)).show()
+spark.sql("SELECT * FROM {}_CAR_DATA.car_sales".format(username)).show()
+
+print("\n")
+print("LIST PRE-ICEBERG MIGRATION PARTITIONS: ")
+print("SHOW PARTITIONS {}_CAR_DATA.CAR_SALES".format(username))
+spark.sql("SHOW PARTITIONS {}_CAR_DATA.CAR_SALES".format(username)).show()
 
 #----------------------------------------------------
 #               MIGRATE SPARK TABLES TO ICEBERG TABLE
 #----------------------------------------------------
 try:
+    print("ALTER TABLE {}_CAR_DATA.CAR_SALES UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
     spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
+
+    print("CALL spark_catalog.system.migrate('{}_CAR_DATA.CAR_SALES')".format(username))
     spark.sql("CALL spark_catalog.system.migrate('{}_CAR_DATA.CAR_SALES')".format(username))
+
     print("Migrated the Car Sales Table to Iceberg Format.")
+
 except:
     print("The Car Sales table has already been migrated to Iceberg Format.")
 
 try:
+    print("ALTER TABLE {}_CAR_DATA.CUSTOMER_DATA UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
     spark.sql("ALTER TABLE {}_CAR_DATA.CUSTOMER_DATA UNSET TBLPROPERTIES ('TRANSLATED_TO_EXTERNAL')".format(username))
+
+    print("CALL spark_catalog.system.migrate('{}_CAR_DATA.CUSTOMER_DATA')".format(username))
     spark.sql("CALL spark_catalog.system.migrate('{}_CAR_DATA.CUSTOMER_DATA')".format(username))
+
     print("Migrated the Customer Data table to Iceberg Format.")
+
 except:
     print("The Customer Data table has already been migrated to Iceberg.")
+
+#print("\n")
+#print("LIST POST-ICEBERG MIGRATION PARTITIONS: ")
+#print("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
+#spark.sql("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+
+post_migration_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.car_sales".format(username))
+
+print("CAR SALES TABLE CURRENT NUMBER OF PARTITIONS: ")
+print(post_migration_df.rdd.getNumPartitions())
 
 #---------------------------------------------------
 #               SHOW ICEBERG TABLE SNAPSHOTS

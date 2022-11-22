@@ -8,7 +8,7 @@ import sys
 #---------------------------------------------------
 #               ENTER YOUR USERNAME HERE
 #---------------------------------------------------
-username = "test_user_112122_1"
+username = "test_user_112222_3"
 data_lake_name = "s3a://go01-demo/"
 
 print("Running script with Username: ", username)

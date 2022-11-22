@@ -52,7 +52,7 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "test_user_112122_1"
+username = "test_user_112222_4"
 print("\n")
 print("Running script with Username: ", username)
 
@@ -91,34 +91,44 @@ print("SELECT * FROM spark_catalog.{}_CAR_DATA._CAR_SALES_TEMP".format(username)
 spark.sql("SELECT * FROM {}_CAR_SALES_TEMP".format(username)).show()
 
 #---------------------------------------------------
+#               ICEBERG PARTITION EVOLUTION
+#---------------------------------------------------
+
+print("CAR SALES TABLE CURRENT NUMBER OF PARTITIONS: ")
+print(car_sales_df.rdd.getNumPartitions())
+
+print("\n")
+print("LIST CURRENT TABLE PARTITIONS: ")
+print("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
+spark.sql("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+
+print("REPLACE PARTITION FIELD MONTH WITH FIELD DAY:")
+print("ALTER TABLE spark_catalog.{}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD MONTH WITH DAY")
+spark.sql("ALTER TABLE spark_catalog.{}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD MONTH WITH DAY".format(username))
+
+print("CAR SALES TABLE NEW NUMBER OF PARTITIONS")
+print(car_sales_df.rdd.getNumPartitions())
+
+print("\n")
+print("LIST NEW TABLE PARTITIONS: ")
+print("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
+spark.sql("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+
+#---------------------------------------------------
 #               ICEBERG SCHEMA EVOLUTION
 #---------------------------------------------------
 
 print(car_sales_df.dtypes)
 
 # DROP COLUMNS
-print("EXECUTING ICEBERG ALTER TABLE STATEMENT")
-print("ALTER TABLE {}_CAR_DATA.CAR_SALES DROP COLUMN VIN".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES DROP COLUMN VIN".format(username))
+print("EXECUTING ICEBERG DROP COLUMN STATEMENT:")
+print("ALTER TABLE spark_catalog.{}_CAR_DATA.CAR_SALES DROP COLUMN VIN".format(username))
+spark.sql("ALTER TABLE spark_catalog.{}_CAR_DATA.CAR_SALES DROP COLUMN VIN".format(username))
 
 # CAST COLUMN TO BIGINT
-print("EXECUTING ICEBERG TYPE CONVERSION STATEMENT")
-print("ALTER TABLE {}_CAR_DATA.CAR_SALES ALTER COLUMN CUSTOMER_ID TYPE BIGINT".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES ALTER COLUMN CUSTOMER_ID TYPE BIGINT".format(username))
-
-#---------------------------------------------------
-#               ICEBERG PARTITION EVOLUTION
-#---------------------------------------------------
-
-print("CAR SALES TABLE CURRENT NUMBER OF PARTITIONS")
-print(car_sales_df.rdd.getNumPartitions())
-
-print("EXECUTING ICEBERG REPLACE PARTITION FIELD MONTH WITH DAY")
-print("ALTER TABLE {}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD month WITH day")
-spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD month WITH day")
-
-print("CAR SALES TABLE NEW NUMBER OF PARTITIONS")
-print(car_sales_df.rdd.getNumPartitions())
+#print("EXECUTING ICEBERG TYPE CONVERSION STATEMENT")
+#print("ALTER TABLE {}_CAR_DATA.CAR_SALES ALTER COLUMN CUSTOMER_ID TYPE BIGINT".format(username))
+#spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES ALTER COLUMN CUSTOMER_ID TYPE BIGINT".format(username))
 
 #---------------------------------------------------
 #               ICEBERG MERGE INTO
@@ -129,7 +139,7 @@ print("\n")
 print("PRE-MERGE COUNT")
 spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 
-ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t USING {0}_CAR_SALES_TEMP s ON t.customer_id = s.customer_id WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *".format(username)
+ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t USING (SELECT CUSTOMER_ID, MODEL, SALEPRICE, DAY, MONTH, YEAR FROM {0}_CAR_SALES_TEMP) s ON t.customer_id = s.customer_id WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *".format(username)
 
 #s.model = 'Model Q' THEN UPDATE SET t.saleprice = t.saleprice - 100\
 #WHEN MATCHED AND s.model = 'Model R' THEN UPDATE SET t.saleprice = t.saleprice + 10\
@@ -148,16 +158,21 @@ spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(user
 #---------------------------------------------------
 
 # ICEBERG TABLE HISTORY (SHOWS EACH SNAPSHOT AND TIMESTAMP)
-spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.history;".format(username)).show()
+print("SHOW ICEBERG TABLE HISTORY")
+print("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.history;".format(username))
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.history;".format(username)).show()
 
 # ICEBERG TABLE SNAPSHOTS (USEFUL FOR INCREMENTAL QUERIES AND TIME TRAVEL)
-spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username)).show()
+print("SHOW ICEBERG TABLE SNAPSHOTS")
+print("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots;".format(username))
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots;".format(username)).show()
 
 #---------------------------------------------------
 #               RUNNING DATA QUALITY TESTS
 #---------------------------------------------------
 
 # Test 1: Ensure Customer ID is Present so Join Can Happen
+print("RUNNING DATA QUALITY TESTS WITH QUINN LIBRARY")
 utils.test_column_presence(car_sales_df, ["customer_id"])
 utils.test_column_presence(customer_data_df, ["customer_id"])
 

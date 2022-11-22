@@ -53,7 +53,7 @@ import pyspark.sql.functions as F
 data_lake_name = "s3a://go01-demo/" # <--- Update data lake val
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv" # <--- Update bucket location
 # Your Username Here:
-username = "test_user_112122_1"
+username = "test_user_112222_4"
 
 print("Running script with Username: ", username)
 
@@ -92,25 +92,12 @@ print("\tDROP DATABASE(S) COMPLETED")
 spark.sql("CREATE DATABASE {}_CAR_DATA".format(username))
 print("\tCREATE DATABASE(S) COMPLETED")
 
-##---------------------------------------------------
-##                 PARTITION CAR SALES DATA
-##---------------------------------------------------
-
-print("\n")
-print("Current Number of Partitions")
-print(car_sales.rdd.getNumPartitions())
-print("\n")
-print("Repartitioning by Month")
-print('car_sales.repartition(12, "month")')
-car_sales = car_sales.repartition(12, "month")
-print("\n")
-print("New Number of Partitions")
-print(car_sales.rdd.getNumPartitions())
-
 #---------------------------------------------------
 #               POPULATE TABLES
 #---------------------------------------------------
-car_sales.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
+
+#NB: The car sales table is partitioned by month
+car_sales.write.mode("overwrite").partitionBy("month").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
 car_installs.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_INSTALLS'.format(username), format="parquet")
 factory_data.write.mode("overwrite").saveAsTable('{}_CAR_DATA.EXPERIMENTAL_MOTORS'.format(username), format="parquet")
 customer_data.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CUSTOMER_DATA'.format(username), format="parquet")
