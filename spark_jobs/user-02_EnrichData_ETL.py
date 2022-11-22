@@ -36,21 +36,6 @@
 #
 #  Source File Name: EnrichData_ETL.py
 #
-#  Description: Create a new enriched table using filtered data
-#               from existing data warehouse.
-#               The following tables are used:
-#                   DATABASE: SALES
-#                     TABLES: CAR_SALES
-#
-#                   DATABASE: FACTORY
-#                     TABLES: CAR_INSTALLS
-#                             EXPERIMENTAL_MOTORS
-#                             EXPERIMENTAL_MOTORS_ENRICHED (will be created)
-#
-#                   DATABASE: MARKETING
-#                     TABLES: CUSTOMER_DATA
-#                             GEO_DATA_XREF
-#
 #  Author(s): Paul de Fusco
 #***************************************************************************/
 from pyspark.sql import SparkSession

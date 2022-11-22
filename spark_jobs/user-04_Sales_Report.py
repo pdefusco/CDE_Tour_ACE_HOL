@@ -94,14 +94,16 @@ spark.sql("SELECT * FROM {}_CAR_SALES_TEMP".format(username)).show()
 #               ICEBERG SCHEMA EVOLUTION
 #---------------------------------------------------
 
+print(car_sales_df.dtypes)
+
 # DROP COLUMNS
-#spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES_REPORT DROP COLUMN CUSTOMER_ID".format(username))
 print("EXECUTING ICEBERG ALTER TABLE STATEMENT")
 print("ALTER TABLE {}_CAR_DATA.CAR_SALES DROP COLUMN VIN".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES DROP COLUMN VIN".format(username))
 
 # CAST COLUMN TO BIGINT
 print("EXECUTING ICEBERG TYPE CONVERSION STATEMENT")
+print("ALTER TABLE {}_CAR_DATA.CAR_SALES ALTER COLUMN CUSTOMER_ID TYPE BIGINT".format(username))
 spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES ALTER COLUMN CUSTOMER_ID TYPE BIGINT".format(username))
 
 #---------------------------------------------------

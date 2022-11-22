@@ -35,7 +35,7 @@ airflow_tour_dag = DAG(
 
 start = DummyOperator(
                 task_id="start",
-                dag=logic_dag)
+                dag=airflow_tour_dag)
 
 spark_sql_left_step1 = CDEJobRunOperator(
         task_id='create-left-table',
