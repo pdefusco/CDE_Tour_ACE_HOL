@@ -47,7 +47,7 @@ import sys
 #---------------------------------------------------
 #               ENTER YOUR USERNAME HERE
 #---------------------------------------------------
-username = "test_user_111822_5"
+username = "test_user_1112122_5"
 data_lake_name = "s3a://go01-demo/"
 
 print("Running script with Username: ", username)
@@ -71,4 +71,3 @@ print("Report: Weekly Cumulative of Parts Installed")
 installs_etl_step4_df = installs_etl_step3_df.withColumn('count_percent',F.col('count')/F.sum('count').over(Window.partitionBy())*100)
 installs_etl_step5_df = installs_etl_step4_df.withColumn('cum_percent', F.sum(installs_etl_step4_df.count_percent).over(Window.partitionBy().orderBy().rowsBetween(-sys.maxsize, 0)))
 installs_etl_step5_df.show()
-

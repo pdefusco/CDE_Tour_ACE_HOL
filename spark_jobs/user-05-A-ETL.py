@@ -47,4 +47,3 @@ installs_etl_step2_df = installs_etl_step1_df\
 installs_etl_step2_df.show()
 
 installs_etl_step2_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.INSTALLS_ETL'.format(username), format="parquet")
-

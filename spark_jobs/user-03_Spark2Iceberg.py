@@ -51,7 +51,7 @@ data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/car-data/"
 
 # Your Username Here:
-username = "test_user_111822_5"
+username = "test_user_1112122_5"
 
 print("Running script with Username: ", username)
 
@@ -64,17 +64,7 @@ spark = SparkSession \
     .config("spark.yarn.access.hadoopFileSystems", data_lake_name)\
     .getOrCreate()
 
-#---------------------------------------------------
-#               MIGRATE HIVE TABLES TO ICEBERG TABLE
-#---------------------------------------------------
-#query_1="""CALL spark_catalog.system.migrate('{}_CAR_DATA.CAR_SALES')""".format(username)
-#print(query_1)
-#spark.sql(query_1)
-
-#query_2 = """CALL spark_catalog.system.snapshot('{0}_CAR_DATA.CUSTOMER_DATA', '{0}_CAR_DATA.CUSTOMER_DATA_ICE')""".format(username)
-#print(query_2)
-#spark.sql(query_2)
-
+print("TOP 20 ROWS IN CAR SALES TABLE")
 spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.car_sales".format(username)).show()
 
 #----------------------------------------------------
@@ -94,35 +84,6 @@ try:
 except:
     print("The Customer Data table has already been migrated to Iceberg.")
 
-
-#### MODIFY TO VERSION 2 HERE ####
-
-# Iceberg comes with catalogs that enable SQL commands to manage tables and load them by name.
-# Catalogs are configured using properties under spark.sql.catalog.(catalog_name).
-
-# Approach 1: Read Spark Table into Spark Dataframe; Then Use Iceberg Dataframe API to create an Iceberg Table.
-#spark.sql("CREATE DATABASE IF NOT EXISTS spark_catalog.iceb")
-#spark.sql("USE spark_catalog.iceb")
-#spark.sql("SHOW CURRENT NAMESPACE").show()
-
-#query_1="""SELECT * FROM {}_CAR_DATA.CAR_SALES""".format(username)
-#query1_df = spark.sql(query_1)
-#query1_df.writeTo("spark_catalog.iceb.CAR_SALES").create()
-
-# Alternatively use:
-#query1_df.write.format("iceberg").mode("overwrite").save("spark_catalog.iceb.CAR_SALES")
-
-# Approach 2: Create a Spark Temp Table from the Spark Table; Then use Iceberg "CREATE "
-#query_2 = """SELECT * FROM {}_CAR_DATA.CAR_SALES""".format(username)
-#query2_df = spark.sql(query_2)
-#query2_df.createOrReplaceTempView("tempview");
-#spark.sql("CREATE or REPLACE TABLE spark_catalog.iceb.CAR_SALES USING iceberg AS SELECT * FROM tempview");
-
-# Approach 3: Create an empty Iceberg Table via Spark SQL and use an INSERT statement to load from an existing Spark Table
-#query_3 = """CREATE TABLE IF NOT EXISTS spark_catalog.iceb.car_installs_iceberg (model STRING, VIN STRING, serial_no STRING) USING iceberg"""
-#spark.sql(query_3)
-#query_4 = """INSERT INTO spark_catalog.iceb.car_installs_iceberg SELECT * FROM {}_CAR_DATA.CAR_INSTALLS""".format(username)
-
 #---------------------------------------------------
 #               SHOW ICEBERG TABLE SNAPSHOTS
 #---------------------------------------------------
@@ -133,9 +94,8 @@ spark.read.format("iceberg").load("spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots
 #spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.history".format(username)).show(20, False)
 #spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.snapshots".format(username)).show(20, False)
 
-# SAVE TIMESTAMP BEFORE INSERTS
+# STORE TIMESTAMP BEFORE INSERTS
 now = datetime.now()
-
 timestamp = datetime.timestamp(now)
 print("PRE-INSERT TIMESTAMP: ", timestamp)
 
@@ -190,7 +150,7 @@ spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.history;".format(username)).show(
 # ICEBERG TABLE SNAPSHOTS (USEFUL FOR INCREMENTAL QUERIES AND TIME TRAVEL)
 spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username)).show()
 
-# GRAB FIRST AND LAST SNAPSHOT ID'S FROM SNAPSHOTS TABLE
+# STORE FIRST AND LAST SNAPSHOT ID'S FROM SNAPSHOTS TABLE
 snapshots_df = spark.sql("SELECT * FROM {}_CAR_DATA.CAR_SALES.snapshots;".format(username))
 
 last_snapshot = snapshots_df.select("snapshot_id").tail(1)[0][0]
@@ -205,6 +165,6 @@ spark.read\
 #---------------------------------------------------
 #               SAVE DATA TO PARQUET
 #---------------------------------------------------
-from datetime import datetime
-write_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-temp_df.write.mode("overwrite").option("header", "true").parquet(s3BucketName+write_time+"/car_sales_data.parquet")
+#from datetime import datetime
+#write_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#temp_df.write.mode("overwrite").option("header", "true").parquet(s3BucketName+write_time+"/car_sales_data.parquet")

@@ -37,7 +37,7 @@
 # #  Author(s): Paul de Fusco
 #***************************************************************************/
 
-# NB: THIS SCRIPT REQUIRES A SPARK 3 CLUSTER
+# NB: THIS SCRIPT REQUIRES A CDE SPARK 3 CLUSTER
 
 #---------------------------------------------------
 #               CREATE SPARK SESSION
@@ -52,8 +52,8 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "test_user_111822_5"
-
+username = "test_user_1112122_5"
+print("\n")
 print("Running script with Username: ", username)
 
 spark = SparkSession \
@@ -81,28 +81,63 @@ batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, 
 
 # Creating Temp View for MERGE INTO command
 batch_df.createOrReplaceTempView('{}_CAR_SALES_TEMP'.format(username))
-
+print("\n")
+print("COMPARING CAR SALES AND CAR SALES TEMP TABLES")
+print("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
 spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+print("\n")
+print("COMPARING CAR SALES AND CAR SALES TEMP TABLES")
+print("SELECT * FROM spark_catalog.{}_CAR_DATA._CAR_SALES_TEMP".format(username))
 spark.sql("SELECT * FROM {}_CAR_SALES_TEMP".format(username)).show()
+
+#---------------------------------------------------
+#               ICEBERG SCHEMA EVOLUTION
+#---------------------------------------------------
+
+# DROP COLUMNS
+#spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES_REPORT DROP COLUMN CUSTOMER_ID".format(username))
+print("EXECUTING ICEBERG ALTER TABLE STATEMENT")
+print("ALTER TABLE {}_CAR_DATA.CAR_SALES DROP COLUMN VIN".format(username))
+spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES DROP COLUMN VIN".format(username))
+
+# CAST COLUMN TO BIGINT
+print("EXECUTING ICEBERG TYPE CONVERSION STATEMENT")
+spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES ALTER COLUMN CUSTOMER_ID TYPE BIGINT".format(username))
+
+#---------------------------------------------------
+#               ICEBERG PARTITION EVOLUTION
+#---------------------------------------------------
+
+print("CAR SALES TABLE CURRENT NUMBER OF PARTITIONS")
+print(car_sales_df.rdd.getNumPartitions())
+
+print("EXECUTING ICEBERG REPLACE PARTITION FIELD MONTH WITH DAY")
+print("ALTER TABLE {}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD month WITH day")
+spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD month WITH day")
+
+print("CAR SALES TABLE NEW NUMBER OF PARTITIONS")
+print(car_sales_df.rdd.getNumPartitions())
 
 #---------------------------------------------------
 #               ICEBERG MERGE INTO
 #---------------------------------------------------
 
 # PRE-INSERT COUNT
+print("\n")
 print("PRE-MERGE COUNT")
 spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 
 ICEBERG_MERGE_INTO = "MERGE INTO spark_catalog.{0}_CAR_DATA.CAR_SALES t USING {0}_CAR_SALES_TEMP s ON t.customer_id = s.customer_id WHEN MATCHED THEN UPDATE SET * WHEN NOT MATCHED THEN INSERT *".format(username)
 
-'''
-s.model = 'Model Q' THEN UPDATE SET t.saleprice = t.saleprice - 100\
-WHEN MATCHED AND s.model = 'Model R' THEN UPDATE SET t.saleprice = t.saleprice + 10\
-'''
-
+#s.model = 'Model Q' THEN UPDATE SET t.saleprice = t.saleprice - 100\
+#WHEN MATCHED AND s.model = 'Model R' THEN UPDATE SET t.saleprice = t.saleprice + 10\
+print("\n")
+print("EXECUTING ICEBERG MERGE INTO QUERY")
+print(ICEBERG_MERGE_INTO)
 spark.sql(ICEBERG_MERGE_INTO)
 
 # PRE-INSERT COUNT
+print("\n")
 print("POST-MERGE COUNT")
 spark.sql("SELECT COUNT(*) FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 
@@ -135,18 +170,9 @@ car_sales_df = utils.test_null_presence_in_col(car_sales_df, "saleprice")
 #---------------------------------------------------
 
 #spark.sql("DROP TABLE IF EXISTS spark_catalog.{0}_CAR_DATA.CAR_SALES_REPORTS PURGE".format(username))
+print("EXECUTING ICEBERG CREATE OR REPLACE TABLE STATEMENT")
+print("CREATE OR REPLACE TABLE spark_catalog.{0}_CAR_DATA.SALES_REPORT USING ICEBERG AS SELECT s.MODEL, s.SALEPRICE, c.SALARY, c.GENDER, c.EMAIL FROM spark_catalog.{0}_CAR_DATA.CAR_SALES s INNER JOIN spark_catalog.{0}_CAR_DATA.CUSTOMER_DATA c on s.CUSTOMER_ID = c.CUSTOMER_ID".format(username))
 spark.sql("CREATE OR REPLACE TABLE spark_catalog.{0}_CAR_DATA.SALES_REPORT USING ICEBERG AS SELECT s.MODEL, s.SALEPRICE, c.SALARY, c.GENDER, c.EMAIL FROM spark_catalog.{0}_CAR_DATA.CAR_SALES s INNER JOIN spark_catalog.{0}_CAR_DATA.CUSTOMER_DATA c on s.CUSTOMER_ID = c.CUSTOMER_ID".format(username))
-
-#---------------------------------------------------
-#               ICEBERG SCHEMA EVOLUTION
-#---------------------------------------------------
-
-# DROP COLUMNS
-#spark.sql("ALTER TABLE {}_CAR_DATA.CAR_SALES_REPORT DROP COLUMN CUSTOMER_ID".format(username))
-spark.sql("ALTER TABLE {}_CAR_DATA.SALES_REPORT DROP COLUMN EMAIL".format(username))
-
-# CAST COLUMN TO FLOAT
-#spark.sql("ALTER TABLE {}_CAR_DATA.SALES_REPORT ALTER COLUMN MONTH TYPE BIGINT".format(username))
 
 #---------------------------------------------------
 #               ANALYTICAL QUERIES
@@ -154,17 +180,12 @@ spark.sql("ALTER TABLE {}_CAR_DATA.SALES_REPORT DROP COLUMN EMAIL".format(userna
 
 reports_df = spark.sql("SELECT * FROM {}_CAR_DATA.SALES_REPORT".format(username))
 
-#GROUP TOTAL SALES BY MONTH
-month_sales_df = reports_df.groupBy("Model").sum("Salary").na.drop().sort(F.asc('sum(Salary)')).withColumnRenamed("sum(Salary)", "sales_by_month")
-month_sales_df = month_sales_df.withColumn('total_sales_by_month', month_sales_df.sales_by_month.cast(DecimalType(18, 2)))
-month_sales_df.select(["Model", "total_sales_by_month"]).sort(F.asc('Model')).show()
-
-#GROUP TOTAL SALES BY MODEL
+print("GROUP TOTAL SALES BY MODEL")
 model_sales_df = reports_df.groupBy("Model").sum("Saleprice").na.drop().sort(F.asc('sum(Saleprice)')).withColumnRenamed("sum(Saleprice)", "sales_by_model")
 model_sales_df = model_sales_df.withColumn('total_sales_by_model', model_sales_df.sales_by_model.cast(DecimalType(18, 2)))
 model_sales_df.select(["Model", "total_sales_by_model"]).sort(F.asc('Model')).show()
 
-#GROUP TOTAL SALES BY GENDER
+print("GROUP TOTAL SALES BY GENDER")
 gender_sales_df = reports_df.groupBy("Gender").sum("Saleprice").na.drop().sort(F.asc('sum(Saleprice)')).withColumnRenamed("sum(Saleprice)", "sales_by_gender")
 gender_sales_df = gender_sales_df.withColumn('total_sales_by_gender', gender_sales_df.sales_by_gender.cast(DecimalType(18, 2)))
 gender_sales_df.select(["Gender", "total_sales_by_gender"]).sort(F.asc('Gender')).show()
