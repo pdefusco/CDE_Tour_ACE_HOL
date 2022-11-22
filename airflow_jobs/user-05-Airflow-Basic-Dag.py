@@ -99,11 +99,11 @@ step4 = BashOperator(
 def _print_context(**context):
     print(context)
 
-print_context_step4 = PythonOperator(
+step5 = PythonOperator(
     task_id="print_context",
     python_callable=_print_context,
     dag=intro_dag
 )
 
 #Execute tasks in the below order
-step1 >> step2 >> step3 >> step4
+step1 >> step2 >> step3 >> step4 >> step5
