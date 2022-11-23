@@ -93,14 +93,15 @@ spark.sql("SELECT * FROM {}_CAR_SALES_TEMP".format(username)).show()
 #               ICEBERG PARTITION EVOLUTION
 #---------------------------------------------------
 
-print("CAR SALES TABLE PARTITIONS BEFORE REPLACE PARTITION STATEMENT: ")
+print("CAR SALES TABLE PARTITIONS BEFORE ALTER PARTITION STATEMENT: ")
 spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.PARTITIONS".format(username)).show()
 
 print("REPLACE PARTITION FIELD MONTH WITH FIELD DAY:")
 print("ALTER TABLE spark_catalog.{}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD MONTH WITH DAY")
-spark.sql("ALTER TABLE spark_catalog.{}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD MONTH WITH DAY".format(username))
+spark.sql("ALTER TABLE spark_catalog.{}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD month WITH day".format(username))
+#spark.sql("ALTER TABLE prod.db.sample ADD PARTITION FIELD month")
 
-print("CAR SALES TABLE PARTITIONS AFTER REPLACE PARTITION STATEMENT: ")
+print("CAR SALES TABLE PARTITIONS AFTER ALTER PARTITION STATEMENT: ")
 spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.PARTITIONS".format(username)).show()
 
 #---------------------------------------------------
