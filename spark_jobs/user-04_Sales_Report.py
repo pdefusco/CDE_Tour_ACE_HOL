@@ -52,7 +52,7 @@ import utils
 data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
 # Your Username Here:
-username = "test_user_112222_4"
+username = "test_user_112222_7"
 print("\n")
 print("Running script with Username: ", username)
 
@@ -86,39 +86,26 @@ print("COMPARING CAR SALES AND CAR SALES TEMP TABLES")
 print("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
 spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
 print("\n")
-print("COMPARING CAR SALES AND CAR SALES TEMP TABLES")
-print("SELECT * FROM spark_catalog.{}_CAR_DATA._CAR_SALES_TEMP".format(username))
+print("SELECT * FROM {}_CAR_SALES_TEMP".format(username))
 spark.sql("SELECT * FROM {}_CAR_SALES_TEMP".format(username)).show()
 
 #---------------------------------------------------
 #               ICEBERG PARTITION EVOLUTION
 #---------------------------------------------------
 
-print("CAR SALES TABLE CURRENT NUMBER OF PARTITIONS: ")
-print(car_sales_df.rdd.getNumPartitions())
-
-print("\n")
-print("LIST CURRENT TABLE PARTITIONS: ")
-print("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
-spark.sql("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+print("CAR SALES TABLE PARTITIONS BEFORE REPLACE PARTITION STATEMENT: ")
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.PARTITIONS".format(username)).show()
 
 print("REPLACE PARTITION FIELD MONTH WITH FIELD DAY:")
 print("ALTER TABLE spark_catalog.{}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD MONTH WITH DAY")
 spark.sql("ALTER TABLE spark_catalog.{}_CAR_DATA.CAR_SALES REPLACE PARTITION FIELD MONTH WITH DAY".format(username))
 
-print("CAR SALES TABLE NEW NUMBER OF PARTITIONS")
-print(car_sales_df.rdd.getNumPartitions())
-
-print("\n")
-print("LIST NEW TABLE PARTITIONS: ")
-print("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
-spark.sql("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+print("CAR SALES TABLE PARTITIONS AFTER REPLACE PARTITION STATEMENT: ")
+spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.PARTITIONS".format(username)).show()
 
 #---------------------------------------------------
 #               ICEBERG SCHEMA EVOLUTION
 #---------------------------------------------------
-
-print(car_sales_df.dtypes)
 
 # DROP COLUMNS
 print("EXECUTING ICEBERG DROP COLUMN STATEMENT:")
