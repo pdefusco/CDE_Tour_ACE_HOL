@@ -20,7 +20,7 @@ git clone https://github.com/pdefusco/CDE_Tour_ACE_HOL.git
 
 Alternatively, if you don't have GitHub create a folder on your local computer; navigate to [this URL](https://github.com/pdefusco/CDE_Tour_ACE_HOL.git) and download the files.
 
-## Introduction to the CDE Data Service Page
+## Introduction to the CDE Data Service
 
 Cloudera Data Engineering (CDE) is a serverless service for Cloudera Data Platform that allows you to submit batch jobs to auto-scaling virtual clusters. CDE enables you to spend more time on your applications, and less time on infrastructure.
 
@@ -54,12 +54,14 @@ A defined collection of files such as a Python file or application JAR, dependen
 ##### Job Run
 An individual job run.
 
+Familiarize yourself with the CDE Landing page. Scroll down to the CDE Virtual Clusters section.  
+
 ![alt text](../img/cde_lp_1.png)
 
 ![alt text](../img/cde_lp_2.png)
 
 
-### Part 1: Implement a Spark Pipeline
+## Part 1: Implement a Spark Pipeline
 
 #### Summary
 
@@ -72,7 +74,7 @@ Navigate to your
 
 
 
-### Part 2: Orchestrating Pipelines with Airflow
+## Part 2: Orchestrating Pipelines with Airflow
 
 #### Summary
 
@@ -85,7 +87,7 @@ In the second DAG you will get a tour of Airflow's most recommended operators in
 Airflow task scheduling allows you to implement advanced logic and interdependencies within your pipelines. With the last Airflow DAG, you will get a flavor of Airflow task scheduling with a simple workflow that breaks up a Spark Join into three separate joins.
 
 
-### Part 3: Using the CDE CLI
+## Part 3: Using the CDE CLI
 
 #### Summary
 
