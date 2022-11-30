@@ -45,3 +45,9 @@ Airflow task scheduling allows you to implement advanced logic and interdependen
 The majority of large scale CDE implementations rely on the CDE API and CLI. With them, you can easily interact with CDE from a local IDE and build integrations with external 3rd party systems. For example, you can implement multi-CDE cluster workflows with GitLabCI or Python.  
 
 In this part of the workshop you will gain familiarity with the CDE CLI by rerunning the same jobs and interacting with the service remotely.
+
+### Conclusion
+
+Congratulations for making it to the end of this tutorial! We hope you enjoyed using CDE first hand. We recommend visiting the [Next Steps Section](https://github.com/pdefusco/CDE_First_Step#next-steps) to continue your journey with CDE.
+
+![alt text](../img/cde_thankyou.png)

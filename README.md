@@ -17,7 +17,7 @@ This CDE Hands On Lab is designed to walk you through the Services's main capabi
 Detailed instructions in English are provided in the [step_by_step_guides](https://github.com/pdefusco/CDE_Tour_ACE_HOL/blob/main/step_by_step_guides/english.md) folder.
 
 
-## Conclusions & Next Steps
+## Next Steps
 
 CDE is the Cloudera Data Engineering Service, a containerized managed service for Spark and Airflow.
 
@@ -48,3 +48,5 @@ For more information on the Cloudera Data Platform and its form factors please v
 For more information on migrating Spark jobs to CDE, please reference [this guide](https://docs.cloudera.com/cdp-private-cloud-upgrade/latest/cdppvc-data-migration-spark/topics/cdp-migration-spark-cdp-cde.html).
 
 If you have any questions about CML or would like to see a demo, please reach out to your Cloudera Account Team or send a message [through this portal](https://www.cloudera.com/contact-sales.html) and we will be in contact with you soon.
+
+![alt text](img/cde_thankyou.png)
