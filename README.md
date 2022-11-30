@@ -24,11 +24,11 @@ In the second DAG you will get a tour of Airflow's most recommended operators in
 
 Airflow task scheduling allows you to implement advanced logic and interdependencies within your pipelines. With the last Airflow DAG, you will get a flavor of Airflow task scheduling with a simple workflow that breaks up a Spark Join into three separate joins.
 
-#### Part 3: Using the CDE API
+#### Part 3: Using the CDE CLI
 
 The majority of large scale CDE implementations rely on the CDE API and CLI. With them, you can easily interact with CDE from a local IDE and build integrations with external 3rd party systems. For example, you can implement multi-CDE cluster workflows with GitLabCI or Python.  
 
-In this part of the workshop you will gain familiarity with the CDE API by rerunning the same jobs and interacting with the service remotely.
+In this part of the workshop you will gain familiarity with the CDE CLI by rerunning the same jobs and interacting with the service remotely.
 
 ## Step by Step Instructions
 
