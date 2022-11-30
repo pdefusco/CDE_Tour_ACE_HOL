@@ -1,11 +1,13 @@
 # Step by Step Guide - ENG
 
+
 ## Requirements
 
 In order to execute the Hands On Labs you need:
 * A CDE Virtual Cluster (Azure, AWS and Private Cloud ok).
 * No script code changes are required other than entering your Storage Bucket and Credentials at the top of each script.
 * Familiarity with Python and PySpark is highly recommended.
+* The files contained in the data folder should be manually loaded in the Storage Location of choice. If you are attending a CDE ACE Workshop, this will already have been done for you. Please validate this with your Cloudera Workshop Lead.  
 
 
 ## Project Setup
@@ -62,18 +64,24 @@ Familiarize yourself with the CDE Landing page. Scroll down to the CDE Virtual C
 
 Open the Virtual Cluster Details icon of your Virtual Cluster as shown above. Familiarize yourself with the Cluster's basic features including the Airflow UI, the CDE API Documentation, Graphana Dashboards and more.
 
-
+![alt text](../img/cde_lp_3.png)
 
 
 ## Part 1: Implement a Spark Pipeline
 
 #### Summary
 
-In this section you will create four Spark jobs. You will store files and python virtual environments in CDE Resources, migrate Spark tables to Iceberg tables, and use some of Iceberg's most awaited features including Time Travel, Incremental Queries, Partition and Schema Evolution.
+In this section you will execute four Spark jobs from the CDE UI. You will store files and python virtual environments in CDE Resources, migrate Spark tables to Iceberg tables, and use some of Iceberg's most awaited features including Time Travel, Incremental Queries, Partition and Schema Evolution.
+
+#### CDE Resources
+
+From the CDE Home Page open the "CDE Resoruces"
+
+
 
 #### Job Creation
 
-Navigate to your
+Navigate to
 
 Using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py", y
 
