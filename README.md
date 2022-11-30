@@ -10,10 +10,6 @@ This CDE Hands On Lab is designed to walk you through the Services's main capabi
 2. Learn about Iceberg's most popular features.
 3. Orchestrate pipelines with Airflow.
 
-## Content Summary
-
-A more detailed step by step guide will be emailed to you by your Cloudera Workshop Lead. Along with it you will receive login credentials and additional logistical details for the event.
-
 #### Part 1: Implement a Spark Pipeline
 
 Using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py", you will create four Spark jobs. Along the way you will learn to use CDE Resources, migrate Spark tables to Iceberg tables in the recommended way, and create an incremental report with Iceberg's native Time Travel capability.
@@ -33,6 +29,10 @@ Airflow task scheduling allows you to implement advanced logic and interdependen
 The majority of large scale CDE implementations rely on the CDE API and CLI. With them, you can easily interact with CDE from a local IDE and build integrations with external 3rd party systems. For example, you can implement multi-CDE cluster workflows with GitLabCI or Python.  
 
 In this part of the workshop you will gain familiarity with the CDE API by rerunning the same jobs and interacting with the service remotely.
+
+## Step by Step Instructions
+
+Detailed instructions in English are provided in the [step_by_step_guides](https://github.com/pdefusco/CDE_First_Step/tree/main/step_by_step_guides) folder.
 
 
 ## Conclusions & Next Steps

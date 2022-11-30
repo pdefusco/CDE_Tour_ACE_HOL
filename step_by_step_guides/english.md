@@ -1,8 +1,9 @@
 ## Requirements
 
-In order to use the script you need to have:
+In order to execute the Hands On Labs you need:
 * A CDE Virtual Cluster (Azure, AWS and Private Cloud ok).
-* No script code changes are required but some familiarity with Python and PySpark is highly recommended.
+* No script code changes are required other than entering your Storage Bucket and Credentials at the top of each script.
+* Familiarity with Python and PySpark is highly recommended.
 
 ## Project Setup
 
@@ -16,9 +17,6 @@ git clone https://github.com/pdefusco/CDE_Tour_ACE_HOL.git
 
 Alternatively, if you don't have GitHub create a folder on your local computer; navigate to [this URL](https://github.com/pdefusco/CDE_Tour_ACE_HOL.git) and download the files.
 
-## Content Summary
-
-A more detailed step by step guide will be emailed to you by your Cloudera Workshop Lead. Along with it you will receive login credentials and additional logistical details for the event.
 
 #### Part 1: Implement a Spark Pipeline
 
