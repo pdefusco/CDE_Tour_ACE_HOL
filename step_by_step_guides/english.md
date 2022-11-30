@@ -28,7 +28,7 @@ Cloudera Data Engineering allows you to create, manage, and schedule Apache Spar
 
 The CDE Service can be reached from the CDP Home Page by clicking on the blue "Data Engineering" icon.
 
-![alt text](../img/cde_lp_0.png)
+![alt text](../img/cdp_lp_0.png)
 
 The CDE Landing Page allows you to access, create and manage CDE Virtual Clusters. Within each CDE Virtual Cluster you can  create, monitor and troubleshoot Spark and Airflow Jobs.
 
