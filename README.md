@@ -2,9 +2,11 @@
 
 ## Objective
 
-CDE is the Cloudera Data Engineering Service, a containerized managed service for Large Scale Batch Pipelines with Spark featuring Airflow and Iceberg.
+CDE is the Cloudera Data Engineering Service, a serverless containerized managed service for Cloudera Data Platform designed for Large Scale Batch Pipelines with Spark, Airflow and Iceberg. CDE is allows you to submit batch jobs to auto-scaling virtual clusters. CDE enables you to spend more time on your applications, and less time on infrastructure.
 
-This CDE Hands On Lab is designed to walk you through the Services's main capabilities. Throughout the exercises you will:
+CDE allows you to create, manage, and schedule Apache Spark jobs without the overhead of creating and maintaining Spark clusters. With CDE, you define virtual clusters with a range of CPU and memory resources, and the cluster scales up and down as needed to run your Spark workloads, helping to control your cloud costs.
+
+This Hands On Lab is designed to walk you through the Services's main capabilities. Throughout the exercises you will:
 
 1. Deploy an Ingestion, Transformation and Reporting pipeline with Spark 3.2.
 2. Learn about Iceberg's most popular features.
