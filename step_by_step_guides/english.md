@@ -60,18 +60,22 @@ Familiarize yourself with the CDE Landing page. Scroll down to the CDE Virtual C
 
 ![alt text](../img/cde_lp_2.png)
 
+Open the Virtual Cluster Details icon of your Virtual Cluster as shown above. Familiarize yourself with the Cluster's basic features including the Airflow UI, the CDE API Documentation, Graphana Dashboards and more.
+
+
+
 
 ## Part 1: Implement a Spark Pipeline
 
 #### Summary
 
-Using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py", you will create four Spark jobs. Along the way you will learn to use CDE Resources, migrate Spark tables to Iceberg tables, and create an incremental query with Iceberg's native Time Travel capability.
+In this section you will create four Spark jobs. You will store files and python virtual environments in CDE Resources, migrate Spark tables to Iceberg tables, and use some of Iceberg's most awaited features including Time Travel, Incremental Queries, Partition and Schema Evolution.
 
 #### Job Creation
 
 Navigate to your
 
-
+Using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py", y
 
 
 ## Part 2: Orchestrating Pipelines with Airflow
