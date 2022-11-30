@@ -4,7 +4,7 @@
 ## Requirements
 
 In order to execute the Hands On Labs you need:
-* A CDE Virtual Cluster (Azure, AWS and Private Cloud ok).
+* A Spark 3 and Iceberg-enabled CDE Virtual Cluster (Azure, AWS and Private Cloud ok).
 * No script code changes are required other than entering your Storage Bucket and Credentials at the top of each script.
 * Familiarity with Python and PySpark is highly recommended.
 * The files contained in the data folder should be manually loaded in the Storage Location of choice. If you are attending a CDE ACE Workshop, this will already have been done for you. Please validate this with your Cloudera Workshop Lead.  
@@ -73,13 +73,41 @@ Open the Virtual Cluster Details icon of your Virtual Cluster as shown above. Fa
 
 In this section you will execute four Spark jobs from the CDE UI. You will store files and python virtual environments in CDE Resources, migrate Spark tables to Iceberg tables, and use some of Iceberg's most awaited features including Time Travel, Incremental Queries, Partition and Schema Evolution.
 
-#### CDE Resources
+#### Creating CDE Resources
 
-From the CDE Home Page open the "CDE Resoruces"
+CDE Resources can be of type "File", "Python", or "Custom Runtime".
 
+To create a File Resource, from the CDE Home Page click on "Create New" in the "Resources" -> "File" section.
 
+![alt text](../img/cde_res_1.png)
 
-#### Job Creation
+Pick your Spark 3 / Iceberg-enabled CDE Virtual Cluster and assign a name to your Resource.
+
+![alt text](../img/cde_res_2.png)
+
+Upload all files from the "cde_ace_hol/cde_spark_jobs". Then, navigate back to the Resources tab, reopen the resource and upload the two Airflow DAGs from the "cde_ace_hol/cde_airflow_jobs" folders. Finally, reopen the resource and upload the "utils.py" file contained in the "cde_ace_hol/resources_files" folder.
+
+NB: In order to load the files from the three folders, you will have to manually upload the files three times. When you are done, ensure you have a total of 13 files in your Resource:
+
+![alt text](../img/cde_res_3.png)
+
+To create a Python Resource, navigate back to the CDE Home Page and click on "Create New" in the "Resources" -> "Python" section.
+
+![alt text](../img/cde_res_4.png)
+
+Ensure to select the same CDE Virtual Cluster. Name the Python CDE Resource and leave the pipy mirror field blank.
+
+![alt text](../img/cde_res_5.png)
+
+Upload the "requirements.txt" file provided in the "cde_ace_hol/resources_files" folder.
+
+![alt text](../img/cde_res_6.png)
+
+Notice the CDE Resource is now building the Python Virtual Environment. After a few moments the build will complete and you will be able to validate the libraries used.
+
+![alt text](../img/cde_res_7.png)
+
+#### Creating CDE Spark Jobs
 
 Navigate to
 
