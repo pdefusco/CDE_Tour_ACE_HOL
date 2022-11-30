@@ -18,11 +18,16 @@ git clone https://github.com/pdefusco/CDE_Tour_ACE_HOL.git
 Alternatively, if you don't have GitHub create a folder on your local computer; navigate to [this URL](https://github.com/pdefusco/CDE_Tour_ACE_HOL.git) and download the files.
 
 
-#### Part 1: Implement a Spark Pipeline
+### Part 1: Implement a Spark Pipeline
+
+#### Summary
 
 Using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py", you will create four Spark jobs. Along the way you will learn to use CDE Resources, migrate Spark tables to Iceberg tables in the recommended way, and create an incremental report with Iceberg's native Time Travel capability.
 
-#### Part 2: Orchestrating Pipelines with Airflow
+
+### Part 2: Orchestrating Pipelines with Airflow
+
+#### Summary
 
 You will build three Airflow jobs to schedule, orchestrate and monitor actions of different types.
 
@@ -32,7 +37,10 @@ In the second DAG you will get a tour of Airflow's most recommended operators in
 
 Airflow task scheduling allows you to implement advanced logic and interdependencies within your pipelines. With the last Airflow DAG, you will get a flavor of Airflow task scheduling with a simple workflow that breaks up a Spark Join into three separate joins.
 
-#### Part 3: Using the CDE CLI
+
+### Part 3: Using the CDE CLI
+
+#### Summary
 
 The majority of large scale CDE implementations rely on the CDE API and CLI. With them, you can easily interact with CDE from a local IDE and build integrations with external 3rd party systems. For example, you can implement multi-CDE cluster workflows with GitLabCI or Python.  
 

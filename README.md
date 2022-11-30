@@ -9,30 +9,12 @@ This CDE Hands On Lab is designed to walk you through the Services's main capabi
 1. Deploy an Ingestion, Transformation and Reporting pipeline with Spark 3.2.
 2. Learn about Iceberg's most popular features.
 3. Orchestrate pipelines with Airflow.
+4. Use the CDE CLI to execute Spark Submits and more from your local machine.
 
-#### Part 1: Implement a Spark Pipeline
-
-Using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py", you will create four Spark jobs. Along the way you will learn to use CDE Resources, migrate Spark tables to Iceberg tables in the recommended way, and create an incremental report with Iceberg's native Time Travel capability.
-
-#### Part 2: Orchestrating Pipelines with Airflow
-
-You will build three Airflow jobs to schedule, orchestrate and monitor actions of different types.
-
-In the first, you will build a basic Airflow DAG to break up a similar pipeline to the one you built in Part 1. This will be a simple sequence of two Spark jobs.
-
-In the second DAG you will get a tour of Airflow's most recommended operators in CDE. You will familiarize yourself with operators to run bash commands, python methods, and interact with external 3rd party systems.
-
-Airflow task scheduling allows you to implement advanced logic and interdependencies within your pipelines. With the last Airflow DAG, you will get a flavor of Airflow task scheduling with a simple workflow that breaks up a Spark Join into three separate joins.
-
-#### Part 3: Using the CDE CLI
-
-The majority of large scale CDE implementations rely on the CDE API and CLI. With them, you can easily interact with CDE from a local IDE and build integrations with external 3rd party systems. For example, you can implement multi-CDE cluster workflows with GitLabCI or Python.  
-
-In this part of the workshop you will gain familiarity with the CDE CLI by rerunning the same jobs and interacting with the service remotely.
 
 ## Step by Step Instructions
 
-Detailed instructions in English are provided in the [step_by_step_guides](https://github.com/pdefusco/CDE_First_Step/tree/main/step_by_step_guides) folder.
+Detailed instructions in English are provided in the [step_by_step_guides](https://github.com/pdefusco/CDE_Tour_ACE_HOL/blob/main/step_by_step_guides/english.md) folder.
 
 
 ## Conclusions & Next Steps
