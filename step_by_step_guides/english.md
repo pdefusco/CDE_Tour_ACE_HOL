@@ -196,22 +196,180 @@ Job Resource(s): cde_hol_files
 
 #### Summary
 
-You will build three Airflow jobs to schedule, orchestrate and monitor actions of different types.
+In this section you will build three Airflow jobs to schedule, orchestrate and monitor the execution of Spark Jobs and more.
 
-In the first, you will build a basic Airflow DAG to break up a similar pipeline to the one you built in Part 1. This will be a simple sequence of two Spark jobs.
+##### Airflow Concepts
 
-In the second DAG you will get a tour of Airflow's most recommended operators in CDE. You will familiarize yourself with operators to run bash commands, python methods, and interact with external 3rd party systems.
+In Airflow, a DAG (Directed Acyclic Graph) is defined in a Python script that represents the DAGs structure (tasks and their dependencies) as code.
 
-Airflow task scheduling allows you to implement advanced logic and interdependencies within your pipelines. With the last Airflow DAG, you will get a flavor of Airflow task scheduling with a simple workflow that breaks up a Spark Join into three separate joins.
+For example, for a simple DAG consisting of three tasks: A, B, and C. The DAG can specify that A has to run successfully before B can run, but C can run anytime. Also that task A times out after 5 minutes, and B can be restarted up to 5 times in case it fails. The DAG might also specify that the workflow runs every night at 10pm, but should not start until a certain date.
+
+For more information about Airflow DAGs, see Apache Airflow documentation [here](https://airflow.apache.org/docs/apache-airflow/stable/concepts/dags.html). For an example DAG in CDE, see CDE Airflow DAG documentation [here](https://docs.cloudera.com/data-engineering/cloud/orchestrate-workflows/topics/cde-airflow-editor.html).
+
+The Airflow UI makes it easy to monitor and troubleshoot your data pipelines. For a complete overview of the Airflow UI, see  Apache Airflow UI documentation [here](https://airflow.apache.org/docs/apache-airflow/stable/ui.html).
+
+##### Executing Airflow Basic DAG
+
+Open "05-Airflow-Basic-DAG.py" and familiarize yourself with the code.
+
+* Most importantly, Airflow allows you to break up complex Spark Pipelines in different steps, isolating issues and optionally providing retry options.
+* The CDEJobRunOperator, BashOperator and PythonOperator are imported at lines 44-46. is imported at line 6. These allow you to execute a CDE Spark Job, Bash, and Python Code respectively all within the same workflow.
+* Each code block at lines 74, 80, 86, 92 and 102 instantiates an Operator. Each of them is stored as a variable named Step 1 - 5.
+* Step 2 and 3 are CDEJobRunOperator instances and are used to execute CDE Spark Jobs. At lines 77 and 83 the CDE Spark Job names have to be declared as they appear in the CDE Jobs UI.  
+* Finally, task dependencies are specified at line 109. Steps 1 - 5 are executed in sequence, one when the other completes. If any of them fails, the remaining steps will not be triggered.
+
+>**⚠ Warning**  
+> Before moving forward, make sure you have added your credentials and job names at lines 48 - 50 in "05-Airflow-Basic-DAG.py"
+> The job names have to match the CDE Spark Job names as they appears in the CDE Jobs UI.
+
+Navigate back to the CDE Home Page and create a new CDE Job of type Airflow.
+
+![alt text](../img/cde_airflow_1.png)
+
+As before, select your Virtual Cluster and Job name. Then create and execute.
+
+![alt text](../img/cde_airflow_2.png)
+
+![alt text](../img/cde_airflow_3.png)
+
+Navigate to the Job Runs tab and notice that the Airflow DAG is running. While in progress, navigate back to the CDE Home Page, scroll down to the Virtual Clusters section and open the Virtual Cluster Details. Then, open the Airflow UI.
+
+![alt text](../img/cde_airflow_4.png)
+
+Familiarize yourself with the Airflow UI. Then, open the Dag Runs page and validate the CDE Airflow Job's execution.
+
+![alt text](../img/cde_airflow_5.png)
+
+![alt text](../img/cde_airflow_6.png)
+
+
+##### Executing Airflow Logic Dag
+
+The previous example showed a very straightforward example but Airflow's capabilities allow you to build more advanced orchestration logic. Open "07-Airflow-Logic-DAG.py" and familiarize yourself with the code. Some of the most notable aspects of this DAG include:
+
+* The DummyOperator is used as a placeholder and starting place for Task Execution.
+* The SimpleHttpOperator is used to send a request to an API endpoint. This provides an optional integration point between CDE Airflow and 3rd Party systems or other Airflow services as requests and responses can be processed by the DAG.
+* Task Execution no longer follows a linear sequence. Step 3 only executes when both Step 1 and 2 have completed successfully.
+
+Cloudera supports the CDWOperator to orchestrate SQL queries in CDW, the Cloudera Data Warehouse Data Service. Additionally, other operators including Python, HTTP, and Bash are available. If you want to learn more about Airflow in CDE, please reference [Using CDE Airflow](https://github.com/pdefusco/Using_CDE_Airflow).
 
 
 ## Part 3: Using the CDE CLI
 
 #### Summary
 
-The majority of large scale CDE implementations rely on the CDE API and CLI. With them, you can easily interact with CDE from a local IDE and build integrations with external 3rd party systems. For example, you can implement multi-CDE cluster workflows with GitLabCI or Python.  
+The majority of CDE Production use cases rely on the CDE API and CLI. With them, you can easily interact with CDE from a local IDE and build integrations with external 3rd party systems. For example, you can implement multi-CDE cluster workflows with GitLabCI or Python.  
 
 In this part of the workshop you will gain familiarity with the CDE CLI by rerunning the same jobs and interacting with the service remotely.
+
+You can use the CDE CLI or API to execute Spark and Airflow jobs remotely rather than via the CDE UI as shown up to this point. In general, the CDE CLI is recommended over the UI when running spark submits from a local machine. The API is instead recommended when integrating CDE Spark Jobs or Airflow Jobs (or both) with 3rd party orchestration systems. For example you can use GitLab CI to build CDE Pipelines across multiple Virtual Clusters. For a detailed example, please reference [GitLab2CDE](https://github.com/pdefusco/Gitlab2CDE).
+
+##### Manual CLI Installation
+
+You can download the CDE CLI to your local machine following the instructions provided in the [official documentation](https://docs.cloudera.com/data-engineering/cloud/cli-access/topics/cde-cli.html).
+
+##### Automated CLI Installation
+
+Alternatively, you can use the "00_cde_cli_install.py" automation script located in the "cde_cli_jobs" folder. This will install the CDE CLI in your local machine if you have a Mac.
+
+First, create a Python virtual environment and install the requirements.
+
+```
+#Create
+python3 -m venv venv
+
+#Activate
+source venv/bin/activate
+
+#Install requirements
+pip install -r requirements.txt #Optionally use pip3 install
+```
+
+Then, execute the script with the following commands:
+
+```
+python cde_cli_jobs/00_cde_cli_install.py JOBS_API_URL CDP_WORKLOAD_USER
+```
+
+#### CLI Steps
+
+###### Run Spark Job:
+
+This command will run the script as a simple Spark Submit. This is slightly different from creating a CDE Job of type Spark as the Job definition will not become reusable.
+
+```
+cde spark submit --conf "spark.pyspark.python=python3" cde_cli_jobs/01_pyspark-sql.py
+```
+
+###### Check Job Status:
+
+This command will allow you to obtain information related to the above spark job. Make sure to replace the id flag with the id provided when you executed the last script e.g. 199.
+
+```
+cde run describe --id 199
+```
+
+###### Review the Output:
+
+This command shows the logs for the above job. Make sure to replace the id flag with the id provided when you executed the last script.  
+
+```
+cde run logs --type "driver/stdout" --id 199
+```
+
+###### Create a CDE Resource:
+
+This command creates a CDE Resource of type File:
+
+```
+cde resource create --name "my_CDE_Resource"
+```
+
+###### Upload file(s) to resource:
+
+This command uploads the "01_pyspark-sql.py" script into the CDE Resource.
+
+```
+cde resource upload --local-path "cde_cli_jobs/01_pyspark-sql.py" --name "my_CDE_Resource"
+```
+
+###### Validate CDE Resource:
+
+This command obtains information related to the CDE Resource.
+
+```
+cde resource describe --name "my_CDE_Resource"
+```
+
+###### Schedule CDE Spark Job with the File Uploaded to the CDE Resource
+
+This command creates a CDE Spark Job using the file uploaded to the CDE Resource.
+
+```
+cde job create --name "PySparkJob_from_CLI" --type spark --conf "spark.pyspark.python=python3" --application-file "/app/mount/01_pyspark-sql.py" --cron-expression "0 */1 * * *" --schedule-enabled "true" --schedule-start "2022-11-28" --schedule-end "2023-08-18" --mount-1-resource "my_CDE_Resource"
+```
+
+###### Validate Job:
+
+This command obtains information about CDE Jobs whose name contains the string "PySparkJob".
+
+```
+cde job list --filter 'name[like]%PySparkJob%'
+```
+
+###### Learning to use the CDE CLI
+
+The CDE CLI offers many more commands. To become familiarized with it you can use the "help" command and learn as you go. Here are some examples:
+
+```
+cde --help
+cde job --help
+cde run --help
+cde resource --help
+```
+
+To learn more about migrating Spark and Airflow to CDE, please refer to the Migration Guide from the official documentation.
+
 
 ### Conclusion
 
