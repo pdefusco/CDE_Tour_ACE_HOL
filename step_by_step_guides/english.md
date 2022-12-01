@@ -187,7 +187,7 @@ Job Resource(s): cde_hol_files
 ```
 
 **NOTE**  
-
+>this is a note
 
 ## Part 2: Orchestrating Pipelines with Airflow
 
