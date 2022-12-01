@@ -114,7 +114,7 @@ Notice the CDE Resource is now building the Python Virtual Environment. After a 
 
 Next we will create four CDE Jobs of type Spark using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py" located in the "cde_ace_hol/cde_spark_jobs" folder.
 
-**⚠ WARNING**  
+>**⚠ Warning**  
 > Before moving forward, you have to edit each of the four scripts with your credentials:
 > data_lake_name, s3BucketName and username
 > These variables are already present at the top of each script for you, but you should update their values
