@@ -186,7 +186,7 @@ Application File: 04_Sales_Report.py
 Job Resource(s): cde_hol_files
 ```
 
-**Note**  
+>**Note**  
 >this is a note
 
 ## Part 2: Orchestrating Pipelines with Airflow
