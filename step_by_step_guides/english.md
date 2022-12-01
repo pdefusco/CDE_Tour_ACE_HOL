@@ -56,7 +56,7 @@ A defined collection of files such as a Python file or application JAR, dependen
 ##### Job Run
 An individual job run.
 
-Familiarize yourself with the CDE Landing page. Scroll down to the CDE Virtual Clusters section.  
+Next, familiarize yourself with the CDE Landing page. Scroll down to the CDE Virtual Clusters section.  
 
 ![alt text](../img/cde_lp_1.png)
 
@@ -85,7 +85,7 @@ Pick your Spark 3 / Iceberg-enabled CDE Virtual Cluster and assign a name to you
 
 ![alt text](../img/cde_res_2.png)
 
-Upload all files from the "cde_ace_hol/cde_spark_jobs". Then, navigate back to the Resources tab, reopen the resource and upload the two Airflow DAGs from the "cde_ace_hol/cde_airflow_jobs" folders. Finally, reopen the resource and upload the "utils.py" file contained in the "cde_ace_hol/resources_files" folder.
+Upload all files from the "cde_ace_hol/cde_spark_jobs" folder. Then, navigate back to the Resources tab, reopen the resource and upload the two Airflow DAGs from the "cde_ace_hol/cde_airflow_jobs" folders. Finally, reopen the resource and upload the "utils.py" file contained in the "cde_ace_hol/resources_files" folder.
 
 NB: In order to load the files from the three folders, you will have to manually upload the files three times. When you are done, ensure you have a total of 13 files in your Resource:
 
@@ -107,11 +107,44 @@ Notice the CDE Resource is now building the Python Virtual Environment. After a 
 
 ![alt text](../img/cde_res_7.png)
 
+![alt text](../img/cde_res_8.png)
+
+
 #### Creating CDE Spark Jobs
 
-Navigate to
+Navigate back to the CDE Home Page and create four CDE Jobs of type Spark using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py" located in the "cde_ace_hol/cde_spark_jobs" folder.
 
-Using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py", y
+Click on "Create New" in the "Jobs" -> "Spark" section.
+
+![alt text](../img/cde_jobs_1.png)
+
+Select your CDE Virtual Cluster and assign "O1_Setup" as the Job Name.
+
+![alt text](../img/cde_jobs_2.png)
+
+Scroll down; ensure to select "File" from the radio button and click on "Select from Resource" in the "Application File" section. A window will open with the contents loaded in your File Resource. Select script "01_Pre_Setup.py".
+
+![alt text](../img/cde_jobs_3.png)
+
+![alt text](../img/cde_jobs_4.png)
+
+Scroll down again to the "Resources" section and notice that your File Resource has been mapped to the Job by default. This allows the PySpark script to load modules in the same Resource such as the ones contained in the "utils.py" file.
+
+Scroll to the bottom and click on the "Create and Run" blue icon.
+
+![alt text](../img/cde_jobs_5.png)
+
+You will be automatically taken to the Jobs tab where the Job will now be listed at the top. Open the Job Runs tab on the left pane and validate that the CDE Spark Job is executing.
+
+![alt text](../img/cde_jobs_6.png)
+
+![alt text](../img/cde_jobs_7.png)
+
+When complete, a green checkmark will appear on the left side. Click on the Job Run number to inspect the Logs and more.
+
+![alt text](../img/cde_jobs_8.png)
+
+
 
 
 ## Part 2: Orchestrating Pipelines with Airflow
