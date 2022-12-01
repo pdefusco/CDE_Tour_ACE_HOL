@@ -140,10 +140,30 @@ You will be automatically taken to the Jobs tab where the Job will now be listed
 
 ![alt text](../img/cde_jobs_7.png)
 
-When complete, a green checkmark will appear on the left side. Click on the Job Run number to inspect the Logs and more.
+When complete, a green checkmark will appear on the left side. Click on the Job Run number to explore further.
 
 ![alt text](../img/cde_jobs_8.png)
 
+The Job Run is populated with Metadata, Logs, and the Spark UI. This information is persisted and can be referenced at a later point in time.
+
+The Configuration tab allows you to verify the script and resources used by the CDE Spark Job.
+
+![alt text](../img/cde_jobs_8a.png)
+
+The Logs tab contains rich logging information. For example, you can verify your code output under "Logs" -> "Driver" -> "StdOut".
+
+![alt text](../img/cde_jobs_9.png)
+
+The Spark UI allows you to visualize resources, optimize performance and troubleshoot your Spark Jobs.
+
+![alt text](../img/cde_jobs_10.png)
+
+Now that you have learned how to create a CDE Spark Job with the CDE UI, repeat the same process with the following scripts and settings:
+
+```
+
+
+```
 
 
 
