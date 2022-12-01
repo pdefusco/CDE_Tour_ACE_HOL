@@ -188,6 +188,8 @@ Job Resource(s): cde_hol_files
 
 >**Note**  
 >The Iceberg Jars did not have to be loaded in the Spark Configurations. Iceberg is enabled at the Virtual Cluster level.
+
+>**Note**  
 >Job 04_Sales_Report uses the Quinn Python library. The methods are implemented in utils.py which is loaded via the File Resource.   
 
 ## Part 2: Orchestrating Pipelines with Airflow
