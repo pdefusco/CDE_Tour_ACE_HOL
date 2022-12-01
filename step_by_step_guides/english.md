@@ -158,11 +158,24 @@ The Spark UI allows you to visualize resources, optimize performance and trouble
 
 ![alt text](../img/cde_jobs_10.png)
 
-Now that you have learned how to create a CDE Spark Job with the CDE UI, repeat the same process with the following scripts and settings:
+Now that you have learned how to create a CDE Spark Job with the CDE UI, repeat the same process with the following scripts and settings. Leave all other options to their default. Allow each job to complete before creating and executing a new one.
 
 ```
+Job Name: 02_EnrichData_ETL
+Type: Spark
+Application File: 02_EnrichData_ETL.py
+Resource(s): cde_hol_files (or your File Resource name if you used a different one)
 
+Job Name: 03_Spark2Iceberg
+Type: Spark
+Application File: 03_Spark2Iceberg.py
+Resource(s): cde_hol_files
 
+Job Name: 04_Sales_Report
+Type: Spark
+Python Environment: cde_hol_python
+Application File: 04_Sales_Report.py
+Job Resource(s): cde_hol_files
 ```
 
 
