@@ -433,15 +433,15 @@ Click the plus sign to add a new record, and then fill in the fields:
 
 ##### Editing the DAG Python file
 
-Now you are ready to use the CDWOperator in your Airflow DAG. In your editor make a copy of "firstdag.py" and name it "cdw_dag.py"
+Now you are ready to use the CDWOperator in your Airflow DAG. Open the "bonus-01_Airflow_CDW.py" script and familiarize yourself with the code.
 
-At the top, import the Operator along with other import statements:
+The Operator class is imported at line 47.
 
 ```
 from cloudera.cdp.airflow.operators.cdw_operator import CDWOperator
 ```
 
-At the bottom of the file add an instance of the CDWOperator object.
+An instance of the CDWOperator class is created at lines 78-86.
 
 ```
 cdw_query = """
@@ -459,12 +459,12 @@ dw_step3 = CDWOperator(
 )
 ```
 
-Notice that the SQL syntax run in the CDW Virtual Warehouse is declared as a separate variable and then passed to the Operator instance as an argument.
+Notice that the SQL syntax run in the CDW Virtual Warehouse is declared as a separate variable and then passed to the Operator instance as an argument. The Connection is also passed as an argument at line 
 
-Finally, update task dependencies to include "dw_step3":
+Finally, notice that task dependencies include both the spark and dw steps:
 
 ```
-spark_step >> shell >> dw_step3
+spark_step >> dw_step
 ```
 
 Next, create a new Airflow CDE Job named "CDW Dag". Upload the new DAG file to the same or a new CDE resource as part of the creation process.

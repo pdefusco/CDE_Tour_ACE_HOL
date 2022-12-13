@@ -68,14 +68,14 @@ airflow_cdw_dag = DAG(
 spark_step = CDEJobRunOperator(
         task_id='sql_job_new',
         dag=airflow_cdw_dag,
-        job_name='sql_job'
+        job_name='sql_job' #Must match name of CDE Spark Job in the CDE Jobs UI
         )
 
 cdw_query = """
 show databases;
 """
 
-dw_step3 = CDWOperator(
+dw_step = CDWOperator(
     task_id='dataset-etl-cdw',
     dag=airflow_cdw_dag,
     cli_conn_id='cdw_connection',
@@ -85,4 +85,4 @@ dw_step3 = CDWOperator(
     query_isolation=True
 )
 
-spark_step >> shell >> dw_step3
+spark_step >> dw_step
