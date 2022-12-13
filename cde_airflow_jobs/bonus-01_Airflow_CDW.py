@@ -66,7 +66,7 @@ airflow_cdw_dag = DAG(
         )
 
 spark_step = CDEJobRunOperator(
-        task_id='sql_job_new',
+        task_id='sql_job',
         dag=airflow_cdw_dag,
         job_name='sql_job' #Must match name of CDE Spark Job in the CDE Jobs UI
         )
