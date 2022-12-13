@@ -370,6 +370,94 @@ cde resource --help
 
 To learn more about migrating Spark and Airflow to CDE, please refer to the Migration Guide from the official documentation.
 
+## Bonus Labs
+
+So far you explored the core aspects of CDE Spark, Airflow and Iceberg. The following exercises give you an opportunity to explore CDE in more detail.
+
+Each Bonus Lab can be run independently of another. In other words, you can run all or just a select few, and in any order that you prefer.
+
+#### Bonus Lab 1: Using CDE Airflow to Orchestrate CDW
+
+
+
+#### Bonus Lab 1: Using the CDE Airflow Editor to Build Airflow DAGs without Code
+
+Instead of designing an entire DAG using Python, there is an option to use the Airflow Editor.  For this option, you will create a new Job that will perform the same two (2) steps we’ve been working on in the previous 2 labs, with a slight change using the Airflow Editor - step 1) Add a step to execute Python code to load initial data (same python code as previous labs), and step 2) Add a step to execute SQL against CDW to create the enriched experimental_motors_enriched_af table.
+
+Create connection to CDW - first we’ll add a connection to CDW from the Airflow UI, by performing the following steps.  Click on the browser tab for Cloudera Data Engineering.  On the left panel click on the  icon next to the Data Engineering logo to pull up the list of services, and right click on  and select “Open in New Tab” - click on the new tab.
+Click on thebutton in the top right corner of the default-impala-vw Virtual Warehouse
+
+From the menu select “Copy JDBC URL”
+
+Paste the copied URL into Notepad, Wordpad, or any text editor.  We’ll use this in a bit.  This URL is something that can be used to create connections from other tools including BI, ETL, Data Science, and other tools that make JDBC connections.
+
+Next we’ll go back to CDE, by clicking on the Cloudera Data Engineering browser tab.
+
+In the usermarketing-demo Virtual Cluster, click onCluster Details button, on the next screen click the link
+
+
+Then select the Admin > Connection
+
+To create a new connection click on the “+” button
+
+Fill out the form to connect to CDW Virtual Warehouse
+Conn Id: <Pre-Fix>-default-impala-vw
+Conn Type: select “Hive Client Wrapper”
+Description: optional, enter a description for easy identification of this connection
+Host: <node-name>
+From your text editor where you copied the CDW URL, we can extract the Host name
+The URL will have the following pattern: jdbc:hive2://<node-name>/default;transportMode=http;httpPath=cliservice;ssl=true;retries=3
+Be sure to extract the full <node-name> use everything between the double slashes (//) and the next slash (/)
+Schema: default (this is the database name, to use by default when connecting)
+Login: <Pre-Fix>
+Password: <Workload-Password>
+Port: 443
+Click Save
+
+
+Click on the CDE Browser tab to return to CDE Job Runs
+
+
+To create a new Job using the Airflow Editor, first click on Jobs in the left navigation pane
+
+Next we will create a new Job
+Click Create Job button
+Job Type: Airflow
+Name: <Pre-Fix>-Airflow-Editor
+DAG File: Editor
+Click on Create
+
+Once the Job is created we are placed into the canvas for Airflow Editor
+
+The first step of the Job is to execute a Job that has already been created within CDE.  To do this click on CDE Job from the left side of the canvas and drag it onto the left side of the canvas as shown below, and fill in the corresponding dialog box the opens on the right side of the canvas after you release the CDE job
+Name: cde_job_1 (can rename by clicking on this name and typing a new name)
+Job name: select <Pre-Fix>-Pre-SetupDW
+If the Job required parameters (Variables) to be passed in, or additional settings were required, use the Advanced tab.  For this Job nothing else is required.
+
+The next step is we want to execute SQL to create the enriched table. To do this click on CDW query from the left side of the canvas and drag it to the right of cde_job_1
+
+Name: cdw_1 (can rename by clicking on this name and typing a new name)
+Copy and paste the following into the Query dialog
+CREATE TABLE car_data.experimental_motors_enriched_af AS
+SELECT
+customers.*,
+sales.sale_date,
+sales.saleprice,
+sales.model, sales.VIN
+FROM user009_CAR_DATA.car_sales sales
+JOIN user009_CAR_DATA.customer_data customers
+    ON sales.customer_id = customers.customer_id
+Enter <Pre-Fix>-impala-default-vw in the Virtual Warehouse Connection
+
+Hoover over the cde_job_1 to see  connectors “.” on the outer border and a “+” will appear, once the “+” appears click the mouse and drag the connector over to the cdw_1 step until its border turns green and release the mouse
+
+After Connection has been made
+
+Now that we’ve defined both steps and created the flow we can click on Save.  It will display that the Job is being saved and confirm that the pipeline has been saved when it completes successfully.
+To run the job click on Run, it will respond with the Job is submitting
+We can monitor the Job by going to Job Run
+
+
 
 ### Conclusion
 
