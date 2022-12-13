@@ -415,7 +415,7 @@ In the CDE Services column, select the service containing the virtual cluster yo
 
 ![alt text](../img/bonus1_step00_D.png)
 
-From the Airflow UI, click the Connection link from the Admin menu.
+From the Airflow UI, click the Connection link from the Admin tab.
 
 ![alt text](../img/bonus1_step00_E.png)
 
