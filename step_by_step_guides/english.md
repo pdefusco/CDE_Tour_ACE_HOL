@@ -8,6 +8,7 @@ In order to execute the Hands On Labs you need:
 * No script code changes are required other than entering your Storage Bucket and Credentials at the top of each script.
 * Familiarity with Python and PySpark is highly recommended.
 * The files contained in the data folder should be manually loaded in the Storage Location of choice. If you are attending a CDE ACE Workshop, this will already have been done for you. Please validate this with your Cloudera Workshop Lead.  
+* Bonus Lab 1 requires a Hive CDW Virtual Warehouse. This lab is optional.
 
 
 ## Project Setup
@@ -376,11 +377,99 @@ So far you explored the core aspects of CDE Spark, Airflow and Iceberg. The foll
 
 Each Bonus Lab can be run independently of another. In other words, you can run all or just a select few, and in any order that you prefer.
 
-#### Bonus Lab 1: Using CDE Airflow to Orchestrate CDW
+### Bonus Lab 1: Using CDE Airflow with CDW
+
+#### Using the CDWRunOperator
+
+The CDWRunOperator was contributed by Cloudera in order to orchestrate CDW queries with Airflow.
+
+##### CDW Setup Steps
+
+Before we can use it in the DAG we need to connect Airflow to CDW. To complete these steps, you must have access to a CDW virtual warehouse.
+CDE currently supports CDW operations for ETL workloads in Apache Hive virtual warehouses. To determine the CDW hostname to use for the connection:
+
+1. Navigate to the Cloudera Data Warehouse Overview page by clicking the Data Warehouse tile in the Cloudera Data Platform (CDP) management console.
+
+2. In the Virtual Warehouses column, find the warehouse you want to connect to.
+
+3. Click the three-dot menu for the selected warehouse, and then click Copy JDBC URL.
+
+4. Paste the URL into a text editor, and make note of the hostname. For example, starting with the following url the hostname is shown below:
+
+```
+Original URL: jdbc:hive2://hs2-aws-2-hive.env-k5ip0r.dw.ylcu-atmi.cloudera.site/default;transportMode=http;httpPath=cliservice;ssl=true;retries=3;
+
+Hostname: hs2-aws-2-hive.env-k5ip0r.dw.ylcu-atmi.cloudera.site
+```
+
+##### CDE Setup Steps
+
+1. Navigate to the Cloudera Data Engineering Overview page by clicking the Data Engineering tile in the Cloudera Data Platform (CDP) management console.
+
+2. In the CDE Services column, select the service containing the virtual cluster you are using, and then in the Virtual Clusters column, click  Cluster Details for the virtual cluster.
+
+3. Click AIRFLOW UI.
+
+4. From the Airflow UI, click the Connection link from the Admin menu.
+
+5. Click the plus sign to add a new record, and then fill in the fields:
+
+* Conn Id: Create a unique connection identifier, such as "cdw_connection".
+* Conn Type: Select Hive Client Wrapper.
+* Host: Enter the hostname from the JDBC connection URL. Do not enter the full JDBC URL.
+* Schema: default
+* Login: Enter your workload username and password.
+
+6. Click Save.
+
+![alt text](../img/bonus1_step1.png)
+
+##### Editing the DAG Python file
+
+Now you are ready to use the CDWOperator in your Airflow DAG. In your editor make a copy of "firstdag.py" and name it "cdw_dag.py"
+
+At the top, import the Operator along with other import statements:
+
+```
+from cloudera.cdp.airflow.operators.cdw_operator import CDWOperator
+```
+
+At the bottom of the file add an instance of the CDWOperator object.
+
+```
+cdw_query = """
+show databases;
+"""
+
+dw_step3 = CDWOperator(
+    task_id='dataset-etl-cdw',
+    dag=example_dag,
+    cli_conn_id='cdw_connection',
+    hql=cdw_query,
+    schema='default',
+    use_proxy_user=False,
+    query_isolation=True
+)
+```
+
+Notice that the SQL syntax run in the CDW Virtual Warehouse is declared as a separate variable and then passed to the Operator instance as an argument.
+
+Finally, update task dependencies to include "dw_step3":
+
+```
+spark_step >> shell >> dw_step3
+```
+
+Next, create a new Airflow CDE Job named "CDW Dag". Upload the new DAG file to the same or a new CDE resource as part of the creation process.
+
+![alt text](../img/bonus1_step2.png)
+
+Navigate to the CDE Job Runs Page and open the run's Airflow UI. Then open the Tree View and validate that the job has succeeded.
+
+![alt text](../img/bonus1_step3.png)
 
 
-
-#### Bonus Lab 1: Using the CDE Airflow Editor to Build Airflow DAGs without Code
+### Bonus Lab 2: Using the CDE Airflow Editor to Build Airflow DAGs without Code
 
 Instead of designing an entire DAG using Python, there is an option to use the Airflow Editor.  For this option, you will create a new Job that will perform the same two (2) steps we’ve been working on in the previous 2 labs, with a slight change using the Airflow Editor - step 1) Add a step to execute Python code to load initial data (same python code as previous labs), and step 2) Add a step to execute SQL against CDW to create the enriched experimental_motors_enriched_af table.
 
