@@ -373,28 +373,33 @@ To learn more about migrating Spark and Airflow to CDE, please refer to the Migr
 
 ## Bonus Labs
 
-So far you explored the core aspects of CDE Spark, Airflow and Iceberg. The following exercises give you an opportunity to explore CDE in more detail.
+So far you explored the core aspects of CDE Spark, Airflow and Iceberg. The following labs give you an opportunity to explore CDE in more detail.
 
 Each Bonus Lab can be run independently of another. In other words, you can run all or just a select few, and in any order that you prefer.
 
 ### Bonus Lab 1: Using CDE Airflow with CDW
 
-#### Using the CDWRunOperator
-
-The CDWRunOperator was contributed by Cloudera in order to orchestrate CDW queries with Airflow.
+You can use the CDWRunOperator to run CDW queries from a CDE Airflow DAG. This operator has been created and is fully supported by Cloudera.
 
 ##### CDW Setup Steps
 
-Before we can use it in the DAG we need to connect Airflow to CDW. To complete these steps, you must have access to a CDW virtual warehouse.
+Before we can use the operator in a DAG you need to establish a connection between CDE Airflow to CDW. To complete these steps, you must have access to a CDW virtual warehouse.
+
 CDE currently supports CDW operations for ETL workloads in Apache Hive virtual warehouses. To determine the CDW hostname to use for the connection:
 
-1. Navigate to the Cloudera Data Warehouse Overview page by clicking the Data Warehouse tile in the Cloudera Data Platform (CDP) management console.
+Navigate to the Cloudera Data Warehouse Overview page by clicking the Data Warehouse tile in the Cloudera Data Platform (CDP) management console.
 
-2. In the Virtual Warehouses column, find the warehouse you want to connect to.
+![alt text](../img/bonus1_step00_A.png)
 
-3. Click the three-dot menu for the selected warehouse, and then click Copy JDBC URL.
+In the Virtual Warehouses column, find the warehouse you want to connect to.
 
-4. Paste the URL into a text editor, and make note of the hostname. For example, starting with the following url the hostname is shown below:
+![alt text](../img/bonus1_step00_B.png)
+
+Click the three-dot menu for the selected warehouse, and then click Copy JDBC URL.
+
+![alt text](../img/bonus1_step00_C.png)
+
+Paste the URL into a text editor, and make note of the hostname. For example, starting with the following url the hostname would be:
 
 ```
 Original URL: jdbc:hive2://hs2-aws-2-hive.env-k5ip0r.dw.ylcu-atmi.cloudera.site/default;transportMode=http;httpPath=cliservice;ssl=true;retries=3;
@@ -404,15 +409,17 @@ Hostname: hs2-aws-2-hive.env-k5ip0r.dw.ylcu-atmi.cloudera.site
 
 ##### CDE Setup Steps
 
-1. Navigate to the Cloudera Data Engineering Overview page by clicking the Data Engineering tile in the Cloudera Data Platform (CDP) management console.
+Navigate to the Cloudera Data Engineering Overview page by clicking the Data Engineering tile in the Cloudera Data Platform (CDP) management console.
 
-2. In the CDE Services column, select the service containing the virtual cluster you are using, and then in the Virtual Clusters column, click  Cluster Details for the virtual cluster.
+In the CDE Services column, select the service containing the virtual cluster you are using, and then in the Virtual Clusters column, click  Cluster Details for the virtual cluster. Click AIRFLOW UI.
 
-3. Click AIRFLOW UI.
+![alt text](../img/bonus1_step00_D.png)
 
-4. From the Airflow UI, click the Connection link from the Admin menu.
+From the Airflow UI, click the Connection link from the Admin menu.
 
-5. Click the plus sign to add a new record, and then fill in the fields:
+![alt text](../img/bonus1_step00_E.png)
+
+Click the plus sign to add a new record, and then fill in the fields:
 
 * Conn Id: Create a unique connection identifier, such as "cdw_connection".
 * Conn Type: Select Hive Client Wrapper.
