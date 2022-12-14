@@ -488,13 +488,15 @@ From the Editor Canvas drag and drop the Shell Script action. This is equivalent
 
 ![alt text](../img/bonus2_step01.png)
 
-From the
+From the Canvas, drop two CDE Job Actions. Configure them with Job Name "sql_job". You already created this CDE Spark Job in part 2.
 
-![alt text](../img/bonus2_step01.png)
+![alt text](../img/bonus2_step02.png)
 
-From the
+Next, drag and drop a Python action. In the code section, add "print("DAG Terminated")".
 
-![alt text](../img/bonus2_step01.png)
+![alt text](../img/bonus2_step03.png)
+
+Finally, 
 
 
 ### Conclusion
