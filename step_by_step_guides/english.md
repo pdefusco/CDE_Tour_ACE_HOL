@@ -492,11 +492,23 @@ From the Canvas, drop two CDE Job Actions. Configure them with Job Name "sql_job
 
 ![alt text](../img/bonus2_step02.png)
 
-Next, drag and drop a Python action. In the code section, add "print("DAG Terminated")".
+Next, drag and drop a Python action. In the code section, add *print("DAG Terminated")* as shown below.
 
 ![alt text](../img/bonus2_step03.png)
 
-Finally, 
+Finally, complete the DAG by connecting each action.
+
+![alt text](../img/bonus2_step04.png)
+
+For each of the two CDE Jobs, open the action by clicking on the icon on the canvas. Select "Depends on Past" and then "all_success" in the "Trigger Rule" section.
+
+![alt text](../img/bonus2_step05.png)
+
+Execute the DAG and observe it from the CDE Job Runs UI.
+
+![alt text](../img/bonus2_step06.png)
+
+![alt text](../img/bonus2_step07.png)
 
 
 ### Conclusion
