@@ -37,7 +37,6 @@
 # #  Author(s): Paul de Fusco
 #***************************************************************************/
 
-
 # Airflow DAG
 from datetime import datetime, timedelta
 from dateutil import parser
