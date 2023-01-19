@@ -1,5 +1,5 @@
 #****************************************************************************
-# (C) Cloudera, Inc. 2020-2021
+# (C) Cloudera, Inc. 2020-2022
 #  All rights reserved.
 #
 #  Applicable Open Source License: GNU Affero General Public License v3.0
@@ -34,14 +34,9 @@
 #  BUSINESS ADVANTAGE OR UNAVAILABILITY, OR LOSS OR CORRUPTION OF
 #  DATA.
 #
-#  Source File Name: Pre-SetupDW.py
-#
-#  REQUIREMENT: Update variable s3BucketName
-#               using storage.location.base attribute; defined by your environment.
-#
-#
 # #  Author(s): Paul de Fusco
 #***************************************************************************/
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 import pyspark.sql.functions as F
@@ -60,7 +55,7 @@ print("Running script with Username: ", username)
 #---------------------------------------------------
 #               CREATE SPARK SESSION
 #---------------------------------------------------
-spark = SparkSession.builder.appName('Ingest').config("spark.yarn.access.hadoopFileSystems", data_lake_name).getOrCreate()
+spark = SparkSession.builder.appName('INGEST').config("spark.yarn.access.hadoopFileSystems", data_lake_name).getOrCreate()
 
 #-----------------------------------------------------------------------------------
 # LOAD DATA FROM .CSV FILES ON AWS S3 CLOUD STORAGE
