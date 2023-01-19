@@ -47,7 +47,7 @@ from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
 from cloudera.cdp.airflow.operators.cdw_operator import CDWOperator
 from airflow.operators.bash import BashOperator
 
-username = "test_user_112222_7"
+username = "test_user_011923_1"
 dag_name = '{}-bonus-01-airflow-dag'.format(username)
 
 default_args = {

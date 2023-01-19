@@ -45,7 +45,7 @@ from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
 from airflow.operators.bash import BashOperator
 from airflow.operators.python_operator import PythonOperator
 
-username = "test_user_112222_7"
+username = "test_user_011923_1"
 cde_job_name_05_A = "05_A_ETL" #Replace with CDE Job Name for Script 5 A
 cde_job_name_05_B = "05_B_Reports"  #Replace with CDE Job Name for Script 5 B
 
