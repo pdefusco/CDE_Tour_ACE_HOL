@@ -48,7 +48,7 @@ import pyspark.sql.functions as F
 data_lake_name = "s3a://go01-demo/" # <--- Update data lake val
 s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv" # <--- Update bucket location
 # Your Username Here:
-username = "test_user_011923_1"
+username = "test_user_012023_5"
 
 print("Running script with Username: ", username)
 

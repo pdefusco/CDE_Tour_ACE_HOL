@@ -51,7 +51,7 @@ data_lake_name = "s3a://go01-demo/"
 s3BucketName = "s3a://go01-demo/cde-workshop/car-data/"
 
 # Your Username Here:
-username = "test_user_011923_1"
+username = "test_user_012023_5"
 
 print("Running script with Username: ", username)
 
@@ -67,10 +67,10 @@ spark = SparkSession \
 print("TOP 20 ROWS IN CAR SALES TABLE")
 spark.sql("SELECT * FROM {}_CAR_DATA.car_sales".format(username)).show()
 
-print("\n")
-print("CAR SALES TABLE PRE-ICEBERG MIGRATION PARTITIONS: ")
-print("SHOW PARTITIONS {}_CAR_DATA.CAR_SALES".format(username))
-spark.sql("SHOW PARTITIONS {}_CAR_DATA.CAR_SALES".format(username)).show()
+#print("\n")
+#print("CAR SALES TABLE PRE-ICEBERG MIGRATION PARTITIONS: ")
+#print("SHOW PARTITIONS {}_CAR_DATA.CAR_SALES".format(username))
+#spark.sql("SHOW PARTITIONS {}_CAR_DATA.CAR_SALES".format(username)).show()
 
 #----------------------------------------------------
 #               MIGRATE SPARK TABLES TO ICEBERG TABLE
@@ -97,6 +97,9 @@ except:
 #print("LIST POST-ICEBERG MIGRATION PARTITIONS: ")
 #print("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
 #spark.sql("SHOW PARTITIONS spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+#print("DESCRIBE TABLE spark_catalog.{}_CAR_DATA.CAR_SALES".format(username))
+#spark.sql("DESCRIBE TABLE spark_catalog.{}_CAR_DATA.CAR_SALES".format(username)).show()
+
 
 print("CAR SALES TABLE POST-ICEBERG MIGRATION PARTITIONS: ")
 spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CAR_SALES.PARTITIONS".format(username)).show()
