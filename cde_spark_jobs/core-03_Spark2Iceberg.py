@@ -54,6 +54,8 @@ data_lake_name=config.get("general","data_lake_name")
 s3BucketName=config.get("general","s3BucketName")
 username=config.get("general","username")
 
+print("Running as Username: ", username)
+
 spark = SparkSession \
     .builder \
     .appName("ICEBERG LOAD") \

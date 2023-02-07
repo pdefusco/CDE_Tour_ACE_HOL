@@ -45,8 +45,16 @@ from airflow import DAG
 from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
 from cloudera.cdp.airflow.operators.cdw_operator import CDWOperator
 from airflow.operators.bash import BashOperator
+import configparser
 
-username = "test_user_011923_1"
+config = configparser.ConfigParser()
+config.read('/app/mount/parameters.conf')
+data_lake_name=config.get("general","data_lake_name")
+s3BucketName=config.get("general","s3BucketName")
+username=config.get("general","username")
+
+print("Running as Username: ", username)
+
 dag_name = '{}-bonus-01-airflow-dag'.format(username)
 
 default_args = {

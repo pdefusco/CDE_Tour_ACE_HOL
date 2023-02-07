@@ -44,8 +44,14 @@ from airflow import DAG
 from cloudera.cdp.airflow.operators.cde_operator import CDEJobRunOperator
 from airflow.operators.bash import BashOperator
 from airflow.operators.python_operator import PythonOperator
+import configparser
 
-username = "test_user_011923_1"
+config = configparser.ConfigParser()
+config.read('/app/mount/parameters.conf')
+username=config.get("general","username")
+
+print("Running as Username: ", username)
+
 cde_job_name_05_A = "05_A_ETL" #Replace with CDE Job Name for Script 5 A
 cde_job_name_05_B = "05_B_Reports"  #Replace with CDE Job Name for Script 5 B
 
