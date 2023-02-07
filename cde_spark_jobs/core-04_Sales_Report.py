@@ -48,13 +48,13 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import *
 import sys
 import utils
+import configparser
 
-data_lake_name = "s3a://go01-demo/"
-s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv/"
-# Your Username Here:
-username = "test_user_012023_5"
-print("\n")
-print("Running script with Username: ", username)
+config = configparser.ConfigParser()
+config.read('/app/mount/parameters.conf')
+data_lake_name=config.get("general","data_lake_name")
+s3BucketName=config.get("general","s3BucketName")
+username=config.get("general","username")
 
 spark = SparkSession \
     .builder \

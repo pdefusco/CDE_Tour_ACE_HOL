@@ -40,15 +40,13 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 import pyspark.sql.functions as F
+import configparser
 
-#---------------------------------------------------
-#               ENTER YOUR USERNAME HERE
-#---------------------------------------------------
-
-data_lake_name = "s3a://go01-demo/" # <--- Update data lake val
-s3BucketName = "s3a://go01-demo/cde-workshop/cardata-csv" # <--- Update bucket location
-# Your Username Here:
-username = "test_user_012023_5"
+config = configparser.ConfigParser()
+config.read('/app/mount/parameters.conf')
+data_lake_name=config.get("general","data_lake_name")
+s3BucketName=config.get("general","s3BucketName")
+username=config.get("general","username")
 
 print("Running script with Username: ", username)
 

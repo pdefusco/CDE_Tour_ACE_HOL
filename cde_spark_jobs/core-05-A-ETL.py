@@ -38,19 +38,16 @@
 #***************************************************************************/
 
 from pyspark.sql import SparkSession
-#from pyspark.sql.functions import *
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 import sys
-#from pyspark.sql.functions import year, month, dayofmonth, dayofweek, dayofyear, weekofyear
+import configparser
 
-#---------------------------------------------------
-#               ENTER YOUR USERNAME HERE
-#---------------------------------------------------
-username = "test_user_011923_2"
-data_lake_name = "s3a://go01-demo/"
-
-print("Running script with Username: ", username)
+config = configparser.ConfigParser()
+config.read('/app/mount/parameters.conf')
+data_lake_name=config.get("general","data_lake_name")
+s3BucketName=config.get("general","s3BucketName")
+username=config.get("general","username")
 
 #---------------------------------------------------
 #               CREATE SPARK SESSION
