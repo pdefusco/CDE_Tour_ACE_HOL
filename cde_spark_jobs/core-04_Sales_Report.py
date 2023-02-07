@@ -78,7 +78,7 @@ customer_data_df = spark.sql("SELECT * FROM spark_catalog.{}_CAR_DATA.CUSTOMER_D
 #               LOAD NEW BATCH DATA
 #---------------------------------------------------
 
-batch_df = spark.read.csv(s3BucketName + "10012020_car_sales.csv", header=True, inferSchema=True)
+batch_df = spark.read.csv(s3BucketName + "/10012020_car_sales.csv", header=True, inferSchema=True)
 #batch_etl_df.write.mode("overwrite").saveAsTable('{}_CAR_DATA.CAR_SALES'.format(username), format="parquet")
 
 # Creating Temp View for MERGE INTO command
