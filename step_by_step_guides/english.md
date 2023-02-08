@@ -124,7 +124,7 @@ In this section you will execute four Spark jobs from the CDE UI. You will store
 > Your Cloudera ACE Workshop Lead will load the required datasets to Cloud Storage ahead of the workshop. If you are reproducing these labs on your own, ensure you have placed all the contents of the data folder in a Cloud Storage path of your choice.
 
 >**⚠ Warning**  
-> Most scripts will assume you have added your username and Cloud Storage path to "resources_files/parameters.conf". Before you start the labs, open "resources_files/parameters.conf" and edit all three fields with values provided by your Cloudera ACE Workshop Lead. Each attendee will be assigned a username and cloud storage path. If you are reproducing these labs on your own you will also have to ensure that these values reflect the Cloud Storage path where you loaded the data.
+> Each attendee will be assigned a username and cloud storage path. Each script will read your credentials from "parameters.conf" which you will have placed in your CDE File Resource. Before you start the labs, open the "parameters.conf" located in the "resources_files" folder and edit all three fields with values provided by your Cloudera ACE Workshop Lead. If you are reproducing these labs on your own you will also have to ensure that these values reflect the Cloud Storage path where you loaded the data.
 
 #### Editing Files and Creating CDE Resources
 
