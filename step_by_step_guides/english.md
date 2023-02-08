@@ -63,7 +63,9 @@ The Home Page provides a high level overview of all CDE Services and Clusters. A
 
 ![alt text](../img/cde_lp_1.png)
 
-Next, open the Administration page on the left tab. Similar to the Home Page, here you can observe all CDE Services on the left and associated Virtual Clusters on the right.
+Next, open the Administration page on the left tab. This page also shows CDE Services on the left and associated Virtual Clusters on the right.
+
+![alt text](../img/cde_service_1.png)
 
 Open the CDE Service Details page and notice the following key information and links:
 
@@ -73,36 +75,38 @@ Open the CDE Service Details page and notice the following key information and l
 * Graphana Charts. Click on this link to obtain a dashboard of running Service Kubernetes resources.
 * Resource Scheduler. Click on this link to view the Yunikorn Web UI.
 
-![alt text](../img/cde_service_1.png)
-
 ![alt text](../img/cde_service_2.png)
 
-Scroll down and open the Configurations tab. Notice that this is where Instance Types and Instance Autoscale ranges are defined. This page includes other important configurations, please visit the CDE Documentation to learn more.
+Scroll down and open the Configurations tab. Notice that this is where Instance Types and Instance Autoscale ranges are defined.
 
 ![alt text](../img/cde_service_3.png)
+
+To learn more about other important service configurations please visit the CDE Documentation.
 
 Navigate back to the Administration page and open a Virtual Cluster's Cluster Details page.
 
 ![alt text](../img/cde_lp_2.png)
 
-This where you can find other important cluster management information. Among other things, from here you can:
+This view includes other important cluster management information. From here you can:
 
 * Download the CDE CLI binaries. The CLI is recommended to submit jobs and interact with CDE. It is covered in Part 3 of this guide.
 * Visit the API Docs to learn the CDE API and build sample requests on the Swagger page.
 * Access the Airflow UI to monitor your Airflow Jobs, set up custom connections, variables, and more.  
 
-Open the Configuration tab. Notice that CPU and Memory autoscale ranges, Spark version, and Iceberg options are set here. This tab also shows the CDE Service that the Virtual Cluster is associated with.
+Open the Configuration tab. Notice that CPU and Memory autoscale ranges, Spark version, and Iceberg options are set here.
 
 ![alt text](../img/cde_lp_3.png)
 
+To learn more about other important service configurations please visit the CDE Documentation.
 
 >**Note**  
->A CDE Service defines cloud instance types, instance autoscale ranges, the associated CDP Data Lake, and other configurations. The Data and Users associated with the Service are constrained by SDX and the CDP Environment settings.
+>A CDE Service defines compute instance types, instance autoscale ranges, the associated CDP Data Lake, and other configurations. The Data and Users associated with the Service are constrained by SDX and the CDP Environment settings.
 
 >**Note**  
-> Within a CDE Service you can deploy one or more CDE Virtual Clusters. The V
+> Within a CDE Service you can deploy one or more CDE Virtual Clusters. The Service Autoscale Ranges are applied to Compute Instances while the Virtual Cluster Autoscale Ranges are applied to CPU and Memory. In other words, the Cluster's ranges are the total resources allowed by all Spark jobs running with the cluster.
 
-
+>**Note**  
+> This architecture allows you to isolate your workloads and access rights within different autoscaling compute clusters while predefining cost management guardrails. For example, you can define Services at an organization level and Virtual Clusters within them as DEV, QA, PROD, etc.
 
 
 ## Part 1: Implement a Spark Pipeline
