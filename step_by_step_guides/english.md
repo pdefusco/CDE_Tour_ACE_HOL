@@ -100,13 +100,13 @@ Open the Configuration tab. Notice that CPU and Memory autoscale ranges, Spark v
 To learn more about other important service configurations please visit the CDE Documentation.
 
 >**Note**  
->A CDE Service defines compute instance types, instance autoscale ranges, the associated CDP Data Lake, and other configurations. The Data and Users associated with the Service are constrained by SDX and the CDP Environment settings.
+>A CDE Service defines compute instance types, instance autoscale ranges and the associated CDP Data Lake. The Data and Users associated with the Service are constrained by SDX and the CDP Environment settings.
 
 >**Note**  
-> Within a CDE Service you can deploy one or more CDE Virtual Clusters. The Service Autoscale Ranges are applied to Compute Instances while the Virtual Cluster Autoscale Ranges are applied to CPU and Memory. In other words, the Cluster's ranges are the total resources allowed by all Spark jobs running with the cluster.
+> Within a CDE Service you can deploy one or more CDE Virtual Clusters. The Service Autoscale Range is a count of min/max allowed Compute Instances while the Virtual Cluster Autoscale Range is the min/max CPU and Memory that can be utilized within the Compute Instance range. The Cluster's range is the total CPU and Memory available to the Spark jobs running within the cluster.
 
 >**Note**  
-> This architecture allows you to isolate your workloads and access rights within different autoscaling compute clusters while predefining cost management guardrails. For example, you can define Services at an organization level and Virtual Clusters within them as DEV, QA, PROD, etc.
+> This flexible architecture allows you to isolate your workloads and limit access within different autoscaling compute clusters while predefining cost management guardrails at an aggregate level. For example, you can define Services at an organization level and Virtual Clusters within them as DEV, QA, PROD, etc.
 
 
 ## Part 1: Implement a Spark Pipeline
