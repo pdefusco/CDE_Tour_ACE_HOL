@@ -46,19 +46,14 @@ from datetime import datetime, timedelta
 from dateutil import parser
 from airflow import DAG
 import pendulum
-import configparser
 
-config = configparser.ConfigParser()
-config.read('/app/mount/parameters.conf')
-username=config.get("general","username")
+username = "pdefusco_020723"
 
 print("Running as Username: ", username)
 
 cde_job_name_07_A = '07_A_pyspark_LEFT'
 cde_job_name_07_B = '07_B_pyspark_RIGHT'
 cde_job_name_07_C = '07_C_pyspark_JOIN'
-
-print("Running script with Username: ", username)
 
 default_args = {
         'owner': username,
