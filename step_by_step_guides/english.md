@@ -79,7 +79,7 @@ Open the CDE Service Details page and notice the following key information and l
 
 Scroll down and open the Configurations tab. Notice that this is where Instance Types and Instance Autoscale ranges are defined.
 
-![alt text](../img/cde_service_3.png)
+![alt text](../img/cde_service_3a.png)
 
 To learn more about other important service configurations please visit the CDE Documentation.
 
