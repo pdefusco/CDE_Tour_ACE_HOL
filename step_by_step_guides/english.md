@@ -264,8 +264,6 @@ Airflow Connections allow you to predefine connection configurations so that the
 
 ![alt text](../img/airflow_connection_3.png)
 
-![alt text](../img/airflow_connection_4.png)
-
 Fill out the following fields as shown below and save.
 
 ```
@@ -274,7 +272,7 @@ Connection Type: HTTP
 Host: https://official-joke-api.appspot.com/
 ```
 
-![alt text](../img/airflow_connection_5.png)
+![alt text](../img/airflow_connection_4.png)
 
 Open the script in your editor of choice and familiarize yourself with the code. Notice the following:
 
