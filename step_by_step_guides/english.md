@@ -81,7 +81,7 @@ Scroll down and open the Configurations tab. Notice that this is where Instance 
 
 ![alt text](../img/cde_service_3a.png)
 
-To learn more about other important service configurations please visit the CDE Documentation.
+To learn more about other important service configurations please visit [Enabling a CDE Service](https://docs.cloudera.com/data-engineering/cloud/enable-data-engineering/topics/cde-enable-data-engineering.html) in the CDE Documentation.
 
 Navigate back to the Administration page and open a Virtual Cluster's Cluster Details page.
 
@@ -97,7 +97,7 @@ Open the Configuration tab. Notice that CPU and Memory autoscale ranges, Spark v
 
 ![alt text](../img/cde_lp_3.png)
 
-To learn more about other important service configurations please visit the CDE Documentation.
+To learn more about CDE Architecture please visit [Creating and Managing Virtual Clusters](https://docs.cloudera.com/data-engineering/cloud/manage-clusters/topics/cde-create-cluster.html) and [Recommendations for Scaling CDE Deployments](https://docs.cloudera.com/data-engineering/cloud/deployment-architecture/topics/cde-general-scaling.html)
 
 >**Note**  
 >A CDE Service defines compute instance types, instance autoscale ranges and the associated CDP Data Lake. The Data and Users associated with the Service are constrained by SDX and the CDP Environment settings.
