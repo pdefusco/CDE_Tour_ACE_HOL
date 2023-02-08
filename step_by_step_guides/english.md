@@ -229,17 +229,29 @@ The Airflow UI makes it easy to monitor and troubleshoot your data pipelines. Fo
 
 ##### Executing Airflow Basic DAG
 
-Open "05-Airflow-Basic-DAG.py" and familiarize yourself with the code.
+Open "05-Airflow-Basic-DAG.py", familiarize yourself with the code, and notice the following:
 
-* Most importantly, Airflow allows you to break up complex Spark Pipelines in different steps, isolating issues and optionally providing retry options.
-* The CDEJobRunOperator, BashOperator and PythonOperator are imported at lines 44-46. is imported at line 6. These allow you to execute a CDE Spark Job, Bash, and Python Code respectively all within the same workflow.
-* Each code block at lines 74, 80, 86, 92 and 102 instantiates an Operator. Each of them is stored as a variable named Step 1 - 5.
-* Step 2 and 3 are CDEJobRunOperator instances and are used to execute CDE Spark Jobs. At lines 77 and 83 the CDE Spark Job names have to be declared as they appear in the CDE Jobs UI.  
-* Finally, task dependencies are specified at line 109. Steps 1 - 5 are executed in sequence, one when the other completes. If any of them fails, the remaining steps will not be triggered.
+* Airflow allows you to break up complex Spark Pipelines in different steps, isolating issues and optionally providing retry options.
+* The CDEJobRunOperator, BashOperator and PythonOperator are imported at lines 44-46. These allow you to execute a CDE Spark Job, Bash, and Python Code respectively all within the same workflow.
+* Each code block at lines 74, 80, 86, 92 and 102 instantiates an Operator. Each of them is stored as a variable named Step 1 through 5.
+* Step 2 and 3 are CDEJobRunOperator instances and are used to execute CDE Spark Jobs. At lines 77 and 83 the CDE Spark Job names have to be declared as they appear in the CDE Jobs UI. In this case, the fields are referencing two variables at lines 52 and 53.
+* Finally, task dependencies are specified at line 109. Steps 1 - 5 are executed in sequence, one when the other completes. If any of them fails, the remaining CDE Jobs will not be triggered.
+
+Create two CDE Spark Jobs using scripts "05-A-ETL.py" and "05-B-Reports.py" but do not run them.
+
+Then, open "05-Airflow-Basic-DAG.py" and enter the names of the two CDE Spark Jobs as they appear in the CDE Jobs UI at lines 52 and 53.
+
+In addition, notice that credentials stored in parameters.conf are not available to CDE Airflow jobs. Therefore, update the username field at line 48 in "05-Airflow-Basic-DAG.py".
+
+The username variable will be used at line 64 to create a dag_name variable which in turn will be used at line 67 to assign a unique DAG name when instantiating the DAG object.
+
+Finally, modify lines 60 and 61 to assign a start and end date that takes place in the future.
 
 >**⚠ Warning**  
-> Before moving forward, make sure you have added your credentials and job names at lines 48 - 50 in "05-Airflow-Basic-DAG.py"
-> The job names have to match the CDE Spark Job names as they appears in the CDE Jobs UI.
+>CDE requires a unique DAG name for each CDE Airflow Job or will otherwise return an error upon job creation.
+
+>**⚠ Warning**   
+> If you don't assign a future start and end date, the CDE Airflow Job will execute twice upon creation. You will thus have a duplicate of each CDE Spark Job running concurrently.  
 
 Navigate back to the CDE Home Page and create a new CDE Job of type Airflow.
 
