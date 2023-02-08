@@ -276,9 +276,11 @@ Familiarize yourself with the Airflow UI. Then, open the Dag Runs page and valid
 
 ##### Executing Airflow Logic Dag
 
-The previous example showed a very straightforward example but Airflow's capabilities allow you to build more advanced orchestration logic.
+Airflow's capabilities include a wide variety of operators, the ability to store temporary context values, connecting to 3rd party systems and overall the ability to implement more advanced orchestration use cases.
 
-Before you can create a CDE Airflow Job to execute this DAG you will have to set up a Connection to the API endpoint referenced at line 110. In order to do so, navigate back to the CDE Administration tab, open your Virtual Cluster's "Cluster Details" and then click on the "Airflow" icon to reach the Airflow UI.
+Using "07-Airflow-Logic-DAG.py" you will create a new CDE Airflow Job with other popular Operators such as the SimpleHttpOperator Operator to send/receive API requests.
+
+In order to use it, first you have to set up a Connection to the endpoint referenced at line 110 in the DAG. Navigate back to the CDE Administration tab, open your Virtual Cluster's "Cluster Details" and then click on the "Airflow" icon to reach the Airflow UI.
 
 ![alt text](../img/airflow_connection_0.png)
 
