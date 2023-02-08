@@ -118,13 +118,13 @@ In this section you will execute four Spark jobs from the CDE UI. You will store
 #### Recommendations Before you Start
 
 >**⚠ Warning**  
-> Throughout the labs, this guide will instruct you to make minor edits to some of the scripts. Please be prepared to edit them in an editor of your choice and re-upload them to the same CDE File Resource after each change. Having all scripts open at all times in an editor such as Atom is highly recommended.
+> Throughout the labs, this guide will instruct you to make minor edits to some of the scripts. Please be prepared to make changes in an editor and re-upload them to the same CDE File Resource after each change. Having all scripts open at all times in an editor such as Atom is highly recommended.
 
 >**⚠ Warning**  
-> Your Cloudera ACE Workshop Lead is tasked with loading the labs datasets to Cloud Storage ahead of the workshop. If you are reproducing these labs on your own, ensure you have placed the contents of the data folder in a Cloud Storage path of your choice before starting.
+> Your Cloudera ACE Workshop Lead will load the required datasets to Cloud Storage ahead of the workshop. If you are reproducing these labs on your own, ensure you have placed the all contents of the data folder in a Cloud Storage path of your choice.
 
 >**⚠ Warning**  
-> Most scripts will assume you have added your username and Cloud Storage path to "resources_files/parameters.conf". Before you start the labs, open "resources_files/parameters.conf" and edit all three fields with values provided by your Cloudera ACE Workshop Lead. Each attendee will be assigned a username. The cloud storage variables will be the same for all attendees. If you are reproducing these labs on your own you will also have to ensure that these values reflect the Cloud Storage path of your choice.
+> Most scripts will assume you have added your username and Cloud Storage path to "resources_files/parameters.conf". Before you start the labs, open "resources_files/parameters.conf" and edit all three fields with values provided by your Cloudera ACE Workshop Lead. Each attendee will be assigned a username and cloud storage path. If you are reproducing these labs on your own you will also have to ensure that these values reflect the Cloud Storage path where you loaded the data.
 
 #### Editing Files and Creating CDE Resources
 
