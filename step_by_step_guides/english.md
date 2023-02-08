@@ -72,23 +72,47 @@ Open the Virtual Cluster Details icon of your Virtual Cluster as shown above. Fa
 
 In this section you will execute four Spark jobs from the CDE UI. You will store files and python virtual environments in CDE Resources, migrate Spark tables to Iceberg tables, and use some of Iceberg's most awaited features including Time Travel, Incremental Queries, Partition and Schema Evolution.
 
-#### Creating CDE Resources
+>**⚠ Warning**  
+> Throughout the labs, this guide will instruct you to make minor edits to some of the scripts. Please be prepared to edit them in an editor of your choice and re-upload them to the same CDE File Resource after each change.
 
-CDE Resources can be of type "File", "Python", or "Custom Runtime".
+>**⚠ Warning**  
+> Your Cloudera ACE Workshop Lead is tasked with loading the labs datasets to Cloud Storage. If you are reproducing these labs on your own, ensure you have placed the contents of the data folder in a Cloud Storage path of your choice before starting.
+
+>**⚠ Warning**  
+> Open "resources_files/parameters.conf" and edit all three values as instructed by your Cloudera ACE Workshop Lead. Each attendee will be assigned a username. The cloud storage variables will be the same for all attendees. If you are reproducing these labs on your own you will also have to ensure that these values reflect the Cloud Storage path of your choice.
+
+#### Editing Files and Creating CDE Resources
+
+CDE Resources can be of type "File", "Python", or "Custom Runtime". You will start by creating a resource of type file to store all Spark and Airflow files and dependencies and then a Python Resource to utilize custom Python libraries in a CDE Spark Job run.
 
 To create a File Resource, from the CDE Home Page click on "Create New" in the "Resources" -> "File" section.
 
 ![alt text](../img/cde_res_1.png)
 
-Pick your Spark 3 / Iceberg-enabled CDE Virtual Cluster and assign a name to your Resource.
+Pick your Spark 3 / Iceberg-enabled CDE Virtual Cluster and name your Resource after your username or a unique ID.
 
 ![alt text](../img/cde_res_2.png)
 
-Upload all files from the "cde_ace_hol/cde_spark_jobs" folder. Then, navigate back to the Resources tab, reopen the resource and upload the two Airflow DAGs from the "cde_ace_hol/cde_airflow_jobs" folders. Finally, reopen the resource and upload the "utils.py" file contained in the "cde_ace_hol/resources_files" folder.
+Upload all files from the "cde_ace_hol/cde_spark_jobs" folder. Then, navigate back to the Resources tab, reopen the resource and upload the two Airflow DAGs located in the "cde_ace_hol/cde_airflow_jobs" folders. Finally, reopen the resource and upload the "utils.py" file contained in the "cde_ace_hol/resources_files" folder.
 
-NB: In order to load the files from the three folders, you will have to manually upload the files three times. When you are done, ensure you have a total of 13 files in your Resource:
+When you are done, ensure that the following files are located in your File Resource:
 
-![alt text](../img/cde_res_3.png)
+```
+01_Pre_Setup.py
+02_EnrichData_ETL.py
+03_Spark2Iceberg.py
+04_Sales_Report.py
+05-A-ETL.py
+05-B-Resports.py
+06-pyspark-sql.py
+07-A-pyspark-LEFT.py
+07-B-pyspark-RIGHT.py
+07-C-pyspark-JOIN.py
+05-Airflow-Basic-Dag.py
+07-Airflow-Logic-Dag.py
+parameters.conf
+utils.py
+```
 
 To create a Python Resource, navigate back to the CDE Home Page and click on "Create New" in the "Resources" -> "Python" section.
 
@@ -112,14 +136,6 @@ Notice the CDE Resource is now building the Python Virtual Environment. After a 
 #### Creating CDE Spark Jobs
 
 Next we will create four CDE Jobs of type Spark using scripts "01_Pre_Setup.py", "02_EnrichData_ETL.py", "03_Spark2Iceberg.py" and "04_Sales_Report.py" located in the "cde_ace_hol/cde_spark_jobs" folder.
-
->**⚠ Warning**  
-> Before moving forward, you have to edit each of the four scripts with your credentials:
-> data_lake_name, s3BucketName and username
-> These variables are already present at the top of each script for you, but you should update their values
-> The username is arbitrary but has to be consistent across all scripts
-> The data_lake_name is normally provided by your Cloudera Workshop Lead or CDP / Cloud Admin
-> The s3BucketName variable is only required in script "04_Sales_Report.py"
 
 Navigate back to the CDE Home Page. Click on "Create New" in the "Jobs" -> "Spark" section.
 
@@ -186,10 +202,14 @@ Job Resource(s): cde_hol_files
 ```
 
 >**Note**  
+>Your credentials are stored in parameters.conf
+
+>**Note**  
 >The Iceberg Jars did not have to be loaded in the Spark Configurations. Iceberg is enabled at the Virtual Cluster level.
 
 >**Note**  
 >Job 04_Sales_Report uses the Quinn Python library. The methods are implemented in utils.py which is loaded via the File Resource.   
+
 
 ## Part 2: Orchestrating Pipelines with Airflow
 
@@ -409,11 +429,13 @@ cde resource --help
 
 To learn more about migrating Spark and Airflow to CDE, please refer to the Migration Guide from the official documentation.
 
+
 ## Bonus Labs
 
 So far you explored the core aspects of CDE Spark, Airflow and Iceberg. The following labs give you an opportunity to explore CDE in more detail.
 
 Each Bonus Lab can be run independently of another. In other words, you can run all or just a select few, and in any order that you prefer.
+
 
 ### Bonus Lab 1: Using CDE Airflow with CDW
 
