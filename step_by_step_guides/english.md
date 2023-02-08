@@ -55,7 +55,9 @@ A defined collection of files such as a Python file or application JAR, dependen
 ##### Job Run
 An individual job run.
 
-Next, familiarize yourself with the CDE Landing page. Scroll down to the CDE Virtual Clusters section.  
+##### CDE User Interface
+
+Now that you have covered the basics of CDE, spend a few moments familiarizing yourself with the CDE Landing page. Scroll down to the CDE Virtual Clusters section.  
 
 ![alt text](../img/cde_lp_1.png)
 
@@ -72,14 +74,16 @@ Open the Virtual Cluster Details icon of your Virtual Cluster as shown above. Fa
 
 In this section you will execute four Spark jobs from the CDE UI. You will store files and python virtual environments in CDE Resources, migrate Spark tables to Iceberg tables, and use some of Iceberg's most awaited features including Time Travel, Incremental Queries, Partition and Schema Evolution.
 
->**⚠ Warning**  
-> Throughout the labs, this guide will instruct you to make minor edits to some of the scripts. Please be prepared to edit them in an editor of your choice and re-upload them to the same CDE File Resource after each change.
+#### Recommendations Before you Start
 
 >**⚠ Warning**  
-> Your Cloudera ACE Workshop Lead is tasked with loading the labs datasets to Cloud Storage. If you are reproducing these labs on your own, ensure you have placed the contents of the data folder in a Cloud Storage path of your choice before starting.
+> Throughout the labs, this guide will instruct you to make minor edits to some of the scripts. Please be prepared to edit them in an editor of your choice and re-upload them to the same CDE File Resource after each change. Having all scripts open at all times in an editor such as Atom is highly recommended.
 
 >**⚠ Warning**  
-> Open "resources_files/parameters.conf" and edit all three values as instructed by your Cloudera ACE Workshop Lead. Each attendee will be assigned a username. The cloud storage variables will be the same for all attendees. If you are reproducing these labs on your own you will also have to ensure that these values reflect the Cloud Storage path of your choice.
+> Your Cloudera ACE Workshop Lead is tasked with loading the labs datasets to Cloud Storage ahead of the workshop. If you are reproducing these labs on your own, ensure you have placed the contents of the data folder in a Cloud Storage path of your choice before starting.
+
+>**⚠ Warning**  
+> Most scripts will assume you have added your username and Cloud Storage path to "resources_files/parameters.conf". Before you start the labs, open "resources_files/parameters.conf" and edit all three fields with values provided by your Cloudera ACE Workshop Lead. Each attendee will be assigned a username. The cloud storage variables will be the same for all attendees. If you are reproducing these labs on your own you will also have to ensure that these values reflect the Cloud Storage path of your choice.
 
 #### Editing Files and Creating CDE Resources
 
