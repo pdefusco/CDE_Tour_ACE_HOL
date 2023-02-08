@@ -244,13 +244,9 @@ Familiarize yourself with the Airflow UI. Then, open the Dag Runs page and valid
 
 ##### Executing Airflow Logic Dag
 
-The previous example showed a very straightforward example but Airflow's capabilities allow you to build more advanced orchestration logic. Open "07-Airflow-Logic-DAG.py" and familiarize yourself with the code. Some of the most notable aspects of this DAG include:
+The previous example showed a very straightforward example but Airflow's capabilities allow you to build more advanced orchestration logic.
 
-* The DummyOperator is used as a placeholder and starting place for Task Execution.
-* The SimpleHttpOperator is used to send a request to an API endpoint. This provides an optional integration point between CDE Airflow and 3rd Party systems or other Airflow services as requests and responses can be processed by the DAG.
-* Task Execution no longer follows a linear sequence. Step 3 only executes when both Step 1 and 2 have completed successfully.
-
-Before you can create a CDE Airflow Job and execute this DAG you will have to set up a Connection to the API endpoint referenced at line 110. In order to do so, navigate back to the CDE Administration tab, open your Virtual Cluster's "Cluster Details" and then click on the "Airflow" icon to reach the Airflow UI.
+Before you can create a CDE Airflow Job to execute this DAG you will have to set up a Connection to the API endpoint referenced at line 110. In order to do so, navigate back to the CDE Administration tab, open your Virtual Cluster's "Cluster Details" and then click on the "Airflow" icon to reach the Airflow UI.
 
 ![alt text](../img/airflow_connection_0.png)
 
@@ -274,15 +270,21 @@ Host: https://official-joke-api.appspot.com/
 
 ![alt text](../img/airflow_connection_4.png)
 
-Open the script in your editor of choice and familiarize yourself with the code. Notice the following:
+Now open "07-Airflow-Logic-DAG.py" and familiarize yourself with the code. Some of the most notable aspects of this DAG include:
 
+* Review line 127. Task Execution no longer follows a linear sequence. Step 3 only executes when both Step 1 and 2 have completed successfully.
+* At lines 75-77, the DummyOperator Operator is used as a placeholder and starting place for Task Execution.
+* At lines 106-115, the SimpleHttpOperator Operator is used to send a request to an API endpoint. This provides an optional integration point between CDE Airflow and 3rd Party systems or other Airflow services as requests and responses can be processed by the DAG.
 * At line 109 the connection id value is the same as the one used in the Airflow Connection you just created.
 * At line 110 the endpoint value determines the API endpoint your requests will hit. This is appended to the base URL you set in the Airflow Connection.
 * At line 112 the response is captured and parsed by the "handle_response" method specified between lines 98-104.
 * At line 114 we use the "do_xcom_push" option to write the response as a DAG context variable. Now the response is temporarily stored for the duration of the Airflow Job and can be reused by other operators.
 * At lines 120-124 the Python Operator executes the "_print_random_joke" method declared at lines 117-118 and outputs the response of the API call.
 
-While the example shows how to read a random joke, the same pattern can be utilized to interact with 3rd party systems and exchange data from a CDE Airflow Job run. For example you could trigger the execution of jobs outside CDP or execute complex CDE Airflow DAG logic with inputs from 3rd party systems.
+In your editor, update your username at line 50. Then, create a new CDE Job of type Airflow and select the script from your CDE Resource.
+
+>**Note**
+>The SimpleHttpOperator can be utilized to interact with 3rd party systems and exchange data to and from a CDE Airflow Job run. For example you could trigger the execution of jobs outside CDP or execute CDE Airflow DAG logic based on inputs from 3rd party systems.
 
 >**Note**  
 >If you want to interact with CDW, the Cloudera Data Warehouse Data Service, Cloudera supports the CDWOperator to orchestrate SQL queries from an Airflow DAG run. If you want to learn more, please go to [Bonus Lab 1: Using CDE Airflow with CDW](https://github.com/pdefusco/CDE_Tour_ACE_HOL/blob/main/step_by_step_guides/english.md#bonus-lab-1-using-cde-airflow-with-cdw).
