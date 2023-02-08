@@ -253,7 +253,7 @@ Finally, modify lines 60 and 61 to assign a start and end date that takes place 
 >**⚠ Warning**   
 > If you don't assign a future start and end date, the CDE Airflow Job will execute twice upon creation. You will thus have a duplicate of each CDE Spark Job running concurrently.  
 
-Navigate back to the CDE Home Page and create a new CDE Job of type Airflow.
+Upload the updated script to your CDE Files Resource. Then navigate back to the CDE Home Page and create a new CDE Job of type Airflow.
 
 ![alt text](../img/cde_airflow_1.png)
 
@@ -315,7 +315,11 @@ Now open "07-Airflow-Logic-DAG.py" and familiarize yourself with the code. Some 
 * At line 114 we use the "do_xcom_push" option to write the response as a DAG context variable. Now the response is temporarily stored for the duration of the Airflow Job and can be reused by other operators.
 * At lines 120-124 the Python Operator executes the "_print_random_joke" method declared at lines 117-118 and outputs the response of the API call.
 
-In your editor, update your username at line 50. Then, create a new CDE Job of type Airflow and select the script from your CDE Resource.
+As in the previous example, first create (but don't run) three CDE Spark Jobs using "07_A_pyspark_LEFT.py", "07_B_pyspark_RIGHT.py" and  "07_C_pyspark_JOIN.py".
+
+Then, open "07-Airflow-Logic-DAG.py" in your editor and update your username at line 50. Make sure that the job names at lines 54 - 56 reflect the three CDE Spark Job names as you entered them in the CDE Job UI.
+
+Finally, reupload the script to your CDE Files Resource. Create a new CDE Job of type Airflow and select the script from your CDE Resource.
 
 >**Note**
 >The SimpleHttpOperator Operator can be used to interact with 3rd party systems and exchange data to and from a CDE Airflow Job run. For example you could trigger the execution of jobs outside CDP or execute CDE Airflow DAG logic based on inputs from 3rd party systems.
