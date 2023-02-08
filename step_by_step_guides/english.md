@@ -183,6 +183,7 @@ Notice the CDE Resource is now building the Python Virtual Environment. After a 
 
 ![alt text](../img/cde_res_8.png)
 
+To learn more about CDE Resources please visit [Using CDE Resources](https://docs.cloudera.com/data-engineering/cloud/use-resources/topics/cde-python-virtual-env.html) in the CDE Documentation.
 
 #### Creating CDE Spark Jobs
 
@@ -261,6 +262,10 @@ Job Resource(s): cde_hol_files
 >**Note**  
 >Job 04_Sales_Report uses the Quinn Python library. The methods are implemented in utils.py which is loaded via the File Resource.   
 
+To learn more about Iceberg in CDE please visit [Using Apache Iceberg in Cloudera Data Engineering](https://docs.cloudera.com/data-engineering/cloud/manage-jobs/topics/cde-using-iceberg.html)
+
+To learn more about CDE Jobs please visit [Creating and Managing CDE Jobs](https://docs.cloudera.com/data-engineering/cloud/manage-jobs/topics/cde-create-job.html) in the CDE Documentation.
+
 
 ## Part 2: Orchestrating Pipelines with Airflow
 
@@ -324,7 +329,6 @@ Familiarize yourself with the Airflow UI. Then, open the Dag Runs page and valid
 
 ![alt text](../img/cde_airflow_6.png)
 
-
 ##### Executing Airflow Logic Dag
 
 Airflow's capabilities include a wide variety of operators, the ability to store temporary context values, connecting to 3rd party systems and overall the ability to implement more advanced orchestration use cases.
@@ -380,6 +384,8 @@ Finally, reupload the script to your CDE Files Resource. Create a new CDE Job of
 
 >**Note**  
 >Additionally, other operators including Python, HTTP, and Bash are available in CDE. If you want to learn more about Airflow in CDE, please reference [Using CDE Airflow](https://github.com/pdefusco/Using_CDE_Airflow).
+
+To learn more about CDE Airflow please visit [Orchestrating Workflows and Pipelines](https://docs.cloudera.com/data-engineering/cloud/orchestrate-workflows/topics/cde-airflow-editor.html) in the CDE Documentation.
 
 
 ## Part 3: Using the CDE CLI
@@ -496,7 +502,7 @@ cde run --help
 cde resource --help
 ```
 
-To learn more about migrating Spark and Airflow to CDE, please refer to the Migration Guide from the official documentation.
+To learn more about the CDE CLI please visit [Using the Cloudera Data Engineering command line interface](https://docs.cloudera.com/data-engineering/cloud/cli-access/topics/cde-cli.html) in the CDE Documentation.
 
 
 ## Bonus Labs
