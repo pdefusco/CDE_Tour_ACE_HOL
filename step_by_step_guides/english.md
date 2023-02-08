@@ -279,10 +279,10 @@ Open the script in your editor of choice and familiarize yourself with the code.
 * At line 109 the connection id value is the same as the one used in the Airflow Connection you just created.
 * At line 110 the endpoint value determines the API endpoint your requests will hit. This is appended to the base URL you set in the Airflow Connection.
 * At line 112 the response is captured and parsed by the "handle_response" method specified between lines 98-104.
-* At line 114 we use the "do_xcom_push" option to write teh response as a DAG context variable. Now the response is temporarily stored for the duration of the Airflow Job and can be reused by other operators.
+* At line 114 we use the "do_xcom_push" option to write the response as a DAG context variable. Now the response is temporarily stored for the duration of the Airflow Job and can be reused by other operators.
 * At lines 120-124 the Python Operator executes the "_print_random_joke" method declared at lines 117-118 and outputs the response of the API call.
 
-While the example shows you to read a random joke, the same pattern can be utilized to interact with 3rd party systems and exchange data from a CDE Airflow Job run. For example you could trigger the execution of jobs outside CDP or execute complex CDE Airflow DAG logic with inputs from 3rd party systems.
+While the example shows how to read a random joke, the same pattern can be utilized to interact with 3rd party systems and exchange data from a CDE Airflow Job run. For example you could trigger the execution of jobs outside CDP or execute complex CDE Airflow DAG logic with inputs from 3rd party systems.
 
 >**Note**  
 >If you want to interact with CDW, the Cloudera Data Warehouse Data Service, Cloudera supports the CDWOperator to orchestrate SQL queries from an Airflow DAG run. If you want to learn more, please go to [Bonus Lab 1: Using CDE Airflow with CDW](https://github.com/pdefusco/CDE_Tour_ACE_HOL/blob/main/step_by_step_guides/english.md#bonus-lab-1-using-cde-airflow-with-cdw).
