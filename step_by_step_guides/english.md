@@ -593,7 +593,7 @@ After a few moments the terminal command output should confirm job submission to
 
 Navigate to your CDE Virtual Cluster Job Runs page and validate the job is running.
 
-
+![alt text](../img/job_submit_confirm2.png)
 
 >**⚠ Warning**  
 >If you are unable to run the spark-submit you may have to remove the tls setting from config.yaml. In other words, completely erase line 4.
