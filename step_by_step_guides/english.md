@@ -567,13 +567,13 @@ spark-submit \
 06-pyspark-sql.py
 ```
 
-Shortly you should get output in your terminal including a Job Run ID confirming successful job submission to CDE.
+Shortly you should get output in your terminal including a Job Run ID confirming successful job submission to CDE. In the screenshot example below the Job Run ID is 9.
 
 ![alt text](../img/job_submit_confirm1.png)
 
-Navigate to your CDE Virtual Cluster Job Runs page and validate the job is running.
+Navigate to your CDE Virtual Cluster Job Runs page and validate the job is running or has run successfully.
 
-![alt text](../img/job_submit_confirm2.png)
+![alt text](../img/job_submit_confirm3.png)
 
 >**⚠ Warning**  
 >If you are unable to run the spark-submit you may have to remove the tls setting from config.yaml. In other words, completely erase line 4.
