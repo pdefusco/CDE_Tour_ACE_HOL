@@ -297,9 +297,9 @@ Create two CDE Spark Jobs using scripts "05-A-ETL.py" and "05-B-Reports.py" but 
 
 Then, open "05-Airflow-Basic-DAG.py" and enter the names of the two CDE Spark Jobs as they appear in the CDE Jobs UI at lines 52 and 53.
 
-In addition, notice that credentials stored in parameters.conf are not available to CDE Airflow jobs. Therefore, update the username field at line 48 in "05-Airflow-Basic-DAG.py".
+In addition, notice that credentials stored in parameters.conf are not available to CDE Airflow jobs. Therefore, update the "username" variable at line 48 in "05-Airflow-Basic-DAG.py".
 
-The username variable will be used at line 64 to create a dag_name variable which in turn will be used at line 67 to assign a unique DAG name when instantiating the DAG object.
+The "username" variable is read at line 64 to create a dag_name variable which in turn will be used at line 67 to assign a unique DAG name when instantiating the DAG object.
 
 Finally, modify lines 60 and 61 to assign a start and end date that takes place in the future.
 
