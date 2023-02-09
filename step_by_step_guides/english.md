@@ -505,6 +505,94 @@ cde resource --help
 To learn more about the CDE CLI please visit [Using the Cloudera Data Engineering command line interface](https://docs.cloudera.com/data-engineering/cloud/cli-access/topics/cde-cli.html) in the CDE Documentation.
 
 
+## Part 4: Using the Spark Migration Tool
+
+#### Summary
+
+The CDE CLI provides a similar although not identical way of running "spark-submits" in CDE. However, adapting many spark-submit command to CDE might become an obstacle. The CDE Engineering team created a Spark Migration tool to facilitate the conversion of a spark-submit to a cde spark-submit.
+
+#### Step By Step Instructions
+
+>**⚠ Warning**  
+>The Spark Submit Migration tool requires having the CDE CLI installed on your machine. Please ensure you have completed the installation steps in Part 3.
+
+>**⚠ Warning**  
+>This tutorial utilizes Docker to streamline the installation process of the Spark Submit Migration tool. If you don't have Docker installed on your machine you will have to go through [this tutorial by Vish Rajagopalan](https://github.com/SuperEllipse/cde-spark-submit-migration) instead.
+
+Navigate to the CDP Management Console and download your user credentials file. The credentials file includes a CDP Access Key ID and a CDP Private Key.
+
+![alt text](../img/mgt_console_1.png)
+
+![alt text](../img/mgt_console_2.png)
+
+![alt text](../img/mgt_console_3.png)
+
+![alt text](../img/mgt_console_4.png)
+
+Next, navigate to the CDE Virtual Cluster Details and copy the JOBS_API_URL.
+
+![alt text](../img/jobsapiurl.png)
+
+Launch the example Docker container.
+
+```
+docker run -it docker-sandbox.infra.cloudera.com/xhu/dex-migration-tool:1.19.0-dex-8961-3
+```
+
+Next, activate the Spark Submit Migration tool.
+
+```
+cde-env.sh activate -p vc-1
+```
+
+Navigate to the .cde folder and place the CDP Access Key ID and Private Key you downloaded earlier in the respective fields.
+
+Next, open the config.yaml file located in the same folder.
+
+Replace the cdp console value at line 3 with the CDP Console URL (e.g. `https://console.us-west-1.cdp.cloudera.com/`).
+Then, enter your JOBS_API_URL in the "vcluster-endpoint" field at line 8.
+
+Finally, run the following spark-submit. This is a sample submit taken from a legacy CDH cluster.
+
+```
+spark-submit \
+--master yarn \
+--deploy-mode cluster \
+--num-executors 12 \
+--executor-cores 1 \
+--executor-memory 8G \
+--driver-memory 8G \
+--driver-cores 1 \
+--queue default \
+--class org.hw.qe.hcube.BatchSparkSQLExecutor \
+--files /etc/hive/conf/hive-site.xml,/etc/hadoop/conf/hdfs-site.xml,/etc/hadoop/conf/core-site.xml \
+--conf spark.dynamicAllocation.enabled=false \
+--conf spark.dynamicAllocation.shuffleTracking.enabled=false \
+--conf spark.locality.wait=0s \
+--conf spark.yarn.access.hadoopFileSystems=hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/ \
+--conf spark.sql.optimizer.dynamicPartitionPruning.enabled=true \
+--conf spark.driver.memoryOverhead=4g \
+--conf spark.executor.memoryOverhead=4g \
+hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/tmp/spark-query-executor-2.4.7-1.0.jar \
+--hdfs hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/tmp \
+--path hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/datasets/tpcds/queries \
+--metricsPath hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/tmp/ \
+--metricsFs HDFS \
+-q query32 \
+-q query90 \
+-q query79 \
+--database dex_tpcds_sf2_withdecimal_withdate_withnulls \
+--sequential \
+--iterations 1 \
+--warmupIterations 0
+```
+
+The terminal command output should confirm job submission to CDE. Navigate to your CDE Virtual Cluster Job Runs page and validate the job is running.
+
+>**⚠ Warning**  
+>If you are unable to run the spark-submit you may have to remove the tls setting from config.yaml. In other words, completely erase line 4.
+
+
 ## Bonus Labs
 
 So far you explored the core aspects of CDE Spark, Airflow and Iceberg. The following labs give you an opportunity to explore CDE in more detail.
