@@ -521,13 +521,14 @@ The CDE CLI provides a similar although not identical way of running "spark-subm
 
 Navigate to the CDP Management Console and download your user credentials file. The credentials file includes a CDP Access Key ID and a CDP Private Key.
 
-![alt text](../img/mgt_console_1.png)
+![alt text](../img/mgt_console1.png)
 
-![alt text](../img/mgt_console_2.png)
+![alt text](../img/mgt_console2.png)
 
-![alt text](../img/mgt_console_3.png)
+![alt text](../img/mgt_console3.png)
 
-![alt text](../img/mgt_console_4.png)
+![alt text](../img/mgt_console4.png)
+
 
 Next, navigate to the CDE Virtual Cluster Details and copy the JOBS_API_URL.
 
