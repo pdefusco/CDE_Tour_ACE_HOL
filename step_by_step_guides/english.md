@@ -517,7 +517,7 @@ The CDE CLI provides a similar although not identical way of running "spark-subm
 >The Spark Submit Migration tool requires having the CDE CLI installed on your machine. Please ensure you have completed the installation steps in Part 3.
 
 >**⚠ Warning**  
->This tutorial utilizes Docker to streamline the installation process of the Spark Submit Migration tool. If you don't have Docker installed on your machine you will have to go through [this tutorial by Vish Rajagopalan](https://github.com/SuperEllipse/cde-spark-submit-migration) instead.
+>This tutorial utilizes Docker to streamline the installation process of the Spark Submit Migration tool. In order to access this Docker image you must be connected to Cloudera VPN. If you are unable to do so or don't have Docker installed on your machine you will have to go through [this tutorial by Vish Rajagopalan](https://github.com/SuperEllipse/cde-spark-submit-migration) instead.
 
 Navigate to the CDP Management Console and download your user credentials file. The credentials file includes a CDP Access Key ID and a CDP Private Key.
 
