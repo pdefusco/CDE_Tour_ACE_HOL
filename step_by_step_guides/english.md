@@ -536,10 +536,10 @@ Next, navigate to the CDE Virtual Cluster Details and copy the JOBS_API_URL.
 Launch the example Docker container.
 
 ```
-docker run -it docker-sandbox.infra.cloudera.com/xhu/dex-migration-tool:1.19.0-dex-8961-3
+docker run -it pauldefusco/cde_spark_submit_migration_tool:latest
 ```
 
-Next, activate the Spark Submit Migration tool.
+Your shell is now inside the running container. Next, activate the Spark Submit Migration tool.
 
 ```
 cde-env.sh activate -p vc-1
@@ -564,30 +564,10 @@ spark-submit \
 --driver-memory 8G \
 --driver-cores 1 \
 --queue default \
---class org.hw.qe.hcube.BatchSparkSQLExecutor \
---files /etc/hive/conf/hive-site.xml,/etc/hadoop/conf/hdfs-site.xml,/etc/hadoop/conf/core-site.xml \
---conf spark.dynamicAllocation.enabled=false \
---conf spark.dynamicAllocation.shuffleTracking.enabled=false \
---conf spark.locality.wait=0s \
---conf spark.yarn.access.hadoopFileSystems=hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/ \
---conf spark.sql.optimizer.dynamicPartitionPruning.enabled=true \
---conf spark.driver.memoryOverhead=4g \
---conf spark.executor.memoryOverhead=4g \
-hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/tmp/spark-query-executor-2.4.7-1.0.jar \
---hdfs hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/tmp \
---path hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/datasets/tpcds/queries \
---metricsPath hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/tmp/ \
---metricsFs HDFS \
--q query32 \
--q query90 \
--q query79 \
---database dex_tpcds_sf2_withdecimal_withdate_withnulls \
---sequential \
---iterations 1 \
---warmupIterations 0
+06-pyspark-sql.py
 ```
 
-After a few moments the terminal command output should confirm job submission to CDE.
+Shortly you should get output in your terminal including a Job Run ID confirming successful job submission to CDE.
 
 ![alt text](../img/job_submit_confirm.png)
 
