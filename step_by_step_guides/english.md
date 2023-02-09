@@ -569,7 +569,7 @@ spark-submit \
 
 Shortly you should get output in your terminal including a Job Run ID confirming successful job submission to CDE.
 
-![alt text](../img/job_submit_confirm.png)
+![alt text](../img/job_submit_confirm1.png)
 
 Navigate to your CDE Virtual Cluster Job Runs page and validate the job is running.
 
