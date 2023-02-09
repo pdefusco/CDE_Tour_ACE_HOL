@@ -587,9 +587,13 @@ hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/tmp/spark-query-executor-2.4.7-1
 --warmupIterations 0
 ```
 
-The terminal command output should confirm job submission to CDE. Navigate to your CDE Virtual Cluster Job Runs page and validate the job is running.
+After a few moments the terminal command output should confirm job submission to CDE.
 
 ![alt text](../img/job_submit_confirm.png)
+
+Navigate to your CDE Virtual Cluster Job Runs page and validate the job is running.
+
+
 
 >**⚠ Warning**  
 >If you are unable to run the spark-submit you may have to remove the tls setting from config.yaml. In other words, completely erase line 4.
