@@ -103,7 +103,7 @@ To learn more about CDE Architecture please visit [Creating and Managing Virtual
 >A CDE Service defines compute instance types, instance autoscale ranges and the associated CDP Data Lake. The Data and Users associated with the Service are constrained by SDX and the CDP Environment settings.
 
 >**Note**  
-> Within a CDE Service you can deploy one or more CDE Virtual Clusters. The Service Autoscale Range is a count of min/max allowed Compute Instances while the Virtual Cluster Autoscale Range is the min/max CPU and Memory that can be utilized within the Compute Instance range. The Cluster's range is the total CPU and Memory available to the Spark jobs running within the cluster.
+> Within a CDE Service you can deploy one or more CDE Virtual Clusters. The Service Autoscale Range is a count of min/max allowed Compute Instances. The Virtual Cluster Autoscale Range is the min/max CPU and Memory that can be utilized by all CDE Jobs within the cluster. The Virtual Cluster Autoscale Range is naturally bounded by the CPU and Memory available at the Service level.
 
 >**Note**  
 > This flexible architecture allows you to isolate your workloads and limit access within different autoscaling compute clusters while predefining cost management guardrails at an aggregate level. For example, you can define Services at an organization level and Virtual Clusters within them as DEV, QA, PROD, etc.
@@ -556,10 +556,10 @@ Finally, run the following spark-submit. This is a sample submit taken from a le
 spark-submit \
 --master yarn \
 --deploy-mode cluster \
---num-executors 12 \
+--num-executors 2 \
 --executor-cores 1 \
---executor-memory 8G \
---driver-memory 8G \
+--executor-memory 2G \
+--driver-memory 1G \
 --driver-cores 1 \
 --queue default \
 06-pyspark-sql.py
