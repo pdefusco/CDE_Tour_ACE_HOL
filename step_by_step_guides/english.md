@@ -539,7 +539,7 @@ Launch the example Docker container.
 docker run -it pauldefusco/cde_spark_submit_migration_tool:latest
 ```
 
-Your shell is now inside the running container. Next, activate the Spark Submit Migration tool.
+You are now inside the running container. Next, activate the Spark Submit Migration tool by running the following shell command.
 
 ```
 cde-env.sh activate -p vc-1
