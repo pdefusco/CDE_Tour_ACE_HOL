@@ -529,7 +529,6 @@ Navigate to the CDP Management Console and download your user credentials file. 
 
 ![alt text](../img/mgt_console4.png)
 
-
 Next, navigate to the CDE Virtual Cluster Details and copy the JOBS_API_URL.
 
 ![alt text](../img/jobsapiurl.png)
@@ -589,6 +588,8 @@ hdfs://xhu-cm795-4.xhu-cm795.root.hwx.site:8020/tmp/spark-query-executor-2.4.7-1
 ```
 
 The terminal command output should confirm job submission to CDE. Navigate to your CDE Virtual Cluster Job Runs page and validate the job is running.
+
+![alt text](../img/job_submit_confirm.png)
 
 >**⚠ Warning**  
 >If you are unable to run the spark-submit you may have to remove the tls setting from config.yaml. In other words, completely erase line 4.
