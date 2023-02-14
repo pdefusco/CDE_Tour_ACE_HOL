@@ -406,6 +406,11 @@ You can download the CDE CLI to your local machine following the instructions pr
 
 Alternatively, you can use the "00_cde_cli_install.py" automation script located in the "cde_cli_jobs" folder. This will install the CDE CLI in your local machine if you have a Mac.
 
+>**⚠ Warning**  
+> The Automated CLI Installation script is not supported by Cloudera. It is just a utility which may not be compatible with your laptop settings. If you are having trouble using this script please follow the documentation to install the CLI Manually.
+
+In order to use the automated installation script, please follow the steps below.
+
 First, create a Python virtual environment and install the requirements.
 
 ```
@@ -425,11 +430,14 @@ Then, execute the script with the following commands:
 python cde_cli_jobs/00_cde_cli_install.py JOBS_API_URL CDP_WORKLOAD_USER
 ```
 
-#### CLI Steps
+#### Using the CDE CLI
 
 ###### Run Spark Job:
 
 This command will run the script as a simple Spark Submit. This is slightly different from creating a CDE Job of type Spark as the Job definition will not become reusable.
+
+>**⚠ Warning**  
+> The CLI commands below are meant to be copy/pasted in your terminal as-is and run from the "cde_tour_ace_hol" directory. However, you may have to update the script path in each command if you're running these from a different folder. 
 
 ```
 cde spark submit --conf "spark.pyspark.python=python3" cde_cli_jobs/01_pyspark-sql.py
