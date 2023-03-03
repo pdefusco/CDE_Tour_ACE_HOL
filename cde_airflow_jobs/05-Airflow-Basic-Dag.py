@@ -57,8 +57,8 @@ default_args = {
     'owner': "pauldefusco",
     'retry_delay': timedelta(seconds=10),
     'depends_on_past': False,
-    'start_date': datetime(2022,11,22,8),
-    'end_date': datetime(2023,9,30)
+    'start_date': datetime(2022,11,22,8), #Start Date must be in the past
+    'end_date': datetime(2023,9,30,8) #End Date must be in the future
 }
 
 dag_name = '{}-05-airflow-pipeline_1'.format(username)

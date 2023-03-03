@@ -307,7 +307,7 @@ Finally, modify lines 60 and 61 to assign a start and end date that takes place 
 >CDE requires a unique DAG name for each CDE Airflow Job or will otherwise return an error upon job creation.
 
 >**⚠ Warning**   
-> If you don't assign a future start and end date, the CDE Airflow Job will execute twice upon creation. You will thus have a duplicate of each CDE Spark Job running concurrently.  
+> If you don't edit the start and end date, the CDE Airflow Job might fail. The Start Date parameter must reflect a date in the past while the End Date must be in the future. If you are getting two identical Airflow Job runs you have set both dates in the past.  
 
 Upload the updated script to your CDE Files Resource. Then navigate back to the CDE Home Page and create a new CDE Job of type Airflow.
 
