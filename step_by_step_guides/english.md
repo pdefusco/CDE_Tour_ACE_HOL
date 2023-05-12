@@ -4,7 +4,7 @@
 
 In order to execute the Hands On Labs you need:
 * A Spark 3 and Iceberg-enabled CDE Virtual Cluster (Azure, AWS and Private Cloud ok).
-* No script code changes are required other than entering your Storage Bucket and Credentials at the top of each script.
+* No script code changes are required other than entering your Storage Bucket and Credentials in resources_files/parameters.conf.
 * Familiarity with Python and PySpark is highly recommended.
 * The files contained in the data folder should be manually loaded in the Storage Location of choice. If you are attending a CDE ACE Workshop, this will already have been done for you. Please validate this with your Cloudera Workshop Lead.  
 * Bonus Lab 1 requires a Hive CDW Virtual Warehouse. This lab is optional.
