@@ -1,7 +1,7 @@
 # CDE Tour ACE Workshop HOL
 
 >**⚠ Warning**  
->This Guide was created for CDE versions up until 1.18. CDE 1.19 was released in May 2023 and includes some important updates. If you have a CDE 1.19 Virtual Cluster at your disposal we recommend using the updated version of the HOL available at [this GitHub repository](https://github.com/pdefusco/CDE119_ACE_WORKSHOP#cde-119-ace-hands-on-lab-workshop)
+>This Guide was created for CDE versions up until 1.18. CDE 1.19 was released in May 2023 and includes some important updates. If you have a CDE 1.19 Virtual Cluster at your disposal we recommend using the updated version of the HOL available at [this GitHub repository](https://github.com/pdefusco/CDE119_ACE_WORKSHOP#cde-119-ace-hands-on-lab-workshop).
 
 ## Objective
 
