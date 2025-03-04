@@ -20,6 +20,7 @@ This Hands On Lab is designed to walk you through the Services's main capabiliti
 
 Detailed instructions in English are provided in the [step_by_step_guides](https://github.com/pdefusco/CDE_Tour_ACE_HOL/blob/main/step_by_step_guides/english.md) folder.
 
+
 ## Next Steps
 
 CDE is the Cloudera Data Engineering Service, a containerized managed service for Spark and Airflow.
